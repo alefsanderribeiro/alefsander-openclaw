@@ -16,7 +16,7 @@ Whisper (transcrição de áudio), PDF/OCR, Browser automation, ffmpeg, e mais.
 
 ```bash
 git clone https://github.com/alefsanderribeiro/alefsander-openclaw.git
-cd openclaw-in-docker
+cd alefsander-openclaw
 ```
 
 ### 2. Configure o ambiente
@@ -300,14 +300,13 @@ Todos os containers são agrupados sob o projeto `openclaw-alefe`:
 $ docker ps --filter name=openclaw-alefe
 
 CONTAINER ID   IMAGE                          NAMES
-abc123         alefsander/openclaw:latest     openclaw-alefe-gateway-1
-def456         alefsander/openclaw:latest     openclaw-alefe-cli-1
+abc123         ghcr.io/alefsanderribeiro/alefsander-openclaw:latest     openclaw-alefe-gateway-1
 ```
 
 ## Estrutura de Arquivos
 
 ```
-openclaw-in-docker/
+alefsander-openclaw/
 ├── Dockerfile              # Imagem custom (Debian + Node 24 + ferramentas)
 ├── docker-compose.yml      # Gateway + CLI com security hardening
 ├── .env.example            # Todas as variáveis documentadas
