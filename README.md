@@ -86,6 +86,19 @@ docker compose up -d
 | **python3 + pip** | Para instalar skills Python |
 | **sudo (NOPASSWD)** | Instalar pacotes em runtime |
 
+### Sobre o Whisper
+
+O [Whisper](https://github.com/openai/whisper) (openai-whisper) e um sistema de
+reconhecimento de fala open-source da OpenAI. Ele roda 100% localmente no container
+— sem enviar audio para servidores externos, sem custo de API.
+Suporta multiplos idiomas (inclusive portugues) e faz transcreicao de audio e video
+para texto com alta precisao.
+
+O Whisper usa **PyTorch** com aceleracao GPU via CUDA (se disponivel). Se nao
+houver GPU, ele roda em CPU automaticamente como fallback.
+
+> GitHub: https://github.com/openai/whisper
+> Documentacao oficial: https://github.com/openai/whisper#readme
 ### Modelos Whisper Disponíveis
 
 | Modelo | Tamanho | RAM | Uso |
