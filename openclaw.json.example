@@ -1,0 +1,428 @@
+// ============================================================
+// OpenClaw Custom — Configuração Segura (openclaw.json)
+// ============================================================
+//
+// COMO USAR:
+//   1. Copie este arquivo para openclaw.json:
+//        cp ~/.openclaw/openclaw.json.example ~/.openclaw/openclaw.json
+//
+//   2. Edite com seus valores:
+//        nano ~/.openclaw/openclaw.json
+//
+//   3. Valide a configuração:
+//        openclaw doctor --fix
+//
+// FORMATO: JSON5 (permite comentários e trailing commas)
+// LOCAL: ~/.openclaw/openclaw.json
+//
+// SEGURANÇA:
+//   - Nunca commite este arquivo com chaves reais
+//   - Use ${VAR} para referenciar variáveis de ambiente
+//   - O workspace confinement limita acesso a arquivos
+// ============================================================
+
+{
+  // ============================================================
+  // GATEWAY — Configuração do servidor principal
+  // ============================================================
+  "gateway": {
+    // Modo: "local" (roda aqui) ou "remote" (conecta a outro)
+    "mode": "local",
+
+    // Porta do gateway (deve bater com OPENCLAW_GATEWAY_PORT no .env)
+    "port": 18789,
+
+    // Bind mode: "lan" (rede local), "loopback" (só localhost),
+    // "tailnet" (só Tailscale), "custom" (define host manualmente)
+    "bind": "lan",
+
+    // Autenticação
+    "auth": {
+      // Modo de auth: "token" (recomendado), "password", "none"
+      // "none" só use em loopback confiável
+      "mode": "token",
+
+      // Token de acesso — referenciado do .env
+      // Nunca coloque o valor real aqui!
+      "token": "${OPENCLAW_GATEWAY_TOKEN}",
+
+      // Rate limiting contra brute force
+      "rateLimit": {
+        "maxAttempts": 10,       // Máx tentativas falhas
+        "windowMs": 60000,       // Janela de tempo (1 min)
+        "lockoutMs": 300000,     // Bloqueio (5 min)
+        "exemptLoopback": true   // Loopback não conta
+      }
+    },
+
+    // Control UI (dashboard web)
+    "controlUi": {
+      "enabled": true,
+      // Origens permitidas para o browser acessar o UI
+      // Adicione seu IP/domain se acessar remotamente
+      "allowedOrigins": [
+        "http://localhost:18789",
+        "http://127.0.0.1:18789"
+      ]
+    },
+
+    // Hot reload de configuração
+    "reload": {
+      // "hybrid" = aplica mudanças seguras instantaneamente,
+      //            restart automático para mudanças críticas
+      "mode": "hybrid",
+      "debounceMs": 500  // Espera 500ms antes de aplicar
+    },
+
+    // Tools HTTP — bloqueia ferramentas perigosas via API HTTP
+    "tools": {
+      // Ferramentas bloqueadas para invocação HTTP externa
+      "deny": ["browser"],
+      // Ferramentas removidas da lista de deny padrão
+      "allow": []
+    },
+
+    // Tailscale (opcional — acesso remoto seguro)
+    "tailscale": {
+      // "off" (desligado), "serve" (só tailnet), "funnel" (público)
+      "mode": "off",
+      "resetOnExit": false
+    }
+  },
+
+  // ============================================================
+  // AGENTS — Configuração dos agentes de IA
+  // ============================================================
+  "agents": {
+    "defaults": {
+      // Modelo principal de IA
+      // Formato: "provider/modelo"
+      // Exemplos: "anthropic/claude-sonnet-4-20250514",
+      //           "openai/gpt-4o", "google/gemini-2.0-flash"
+      "model": {
+        "primary": "${OPENCLAW_PRIMARY_MODEL:-anthropic/claude-sonnet-4-20250514}",
+        // Fallbacks se o principal falhar (rate limit, offline)
+        "fallbacks": [
+          "openai/gpt-4o",
+          "google/gemini-2.0-flash"
+        ]
+      },
+
+      // Workspace — diretório de trabalho do agente
+      // O agente SÓ pode ler/escrever aqui e nos mounts explícitos
+      "workspace": "/home/node/.openclaw/workspace",
+
+      // Sandbox — isola execução de código em containers Docker
+      // "off" = sem sandbox, "non-main" = sandbox para tudo exceto main,
+      // "all" = sandbox para tudo
+      "sandbox": {
+        "mode": "non-main",
+        // Escopo: "agent" (por agente), "session" (por sessão),
+        //         "shared" (compartilhado)
+        "scope": "agent"
+      },
+
+      // Memória — persistência de contexto entre sessões
+      "memorySearch": {
+        "enabled": true
+      },
+
+      // Skills permitidas
+      // "allowBundled" = lista de skills bundled que o agente pode usar
+      // Skills instaladas em ~/.openclaw/skills/ são carregadas auto
+      "skills": {
+        "allowBundled": []  // vazio = todas permitidas
+      }
+    }
+  },
+
+  // ============================================================
+  // MODELS — Providers de IA
+  // ============================================================
+  // Configure os providers que você vai usar.
+  // As chaves de API vêm do .env via ${VAR}.
+  // ============================================================
+  "models": {
+    // "merge" = adiciona aos providers padrão
+    // "replace" = substitui completamente
+    "mode": "merge",
+
+    "providers": {
+      // Anthropic (Claude) — recomendado para coding
+      "anthropic": {
+        "apiKey": "${ANTHROPIC_API_KEY}"
+      },
+
+      // OpenAI (GPT)
+      "openai": {
+        "apiKey": "${OPENAI_API_KEY}"
+      },
+
+      // Google (Gemini) — free tier generoso
+      "google": {
+        "apiKey": "${GEMINI_API_KEY}"
+      },
+
+      // OpenRouter — acesso a múltiplos modelos (inclui gratuitos)
+      "openrouter": {
+        "apiKey": "${OPENROUTER_API_KEY}"
+      },
+
+      // Groq — inferência ultra-rápida (free tier)
+      "groq": {
+        "apiKey": "${GROQ_API_KEY}"
+      },
+
+      // Mistral
+      "mistral": {
+        "apiKey": "${MISTRAL_API_KEY}"
+      },
+
+      // Cohere
+      "cohere": {
+        "apiKey": "${COHERE_API_KEY}"
+      },
+
+      // DeepSeek
+      "deepseek": {
+        "apiKey": "${DEEPSEEK_API_KEY}"
+      },
+
+      // Provider custom — qualquer endpoint OpenAI-compatible
+      // Útil para Ollama, LM Studio, etc. rodando localmente
+      "local-llm": {
+        "baseUrl": "http://host.docker.internal:11434/v1",
+        "apiKey": "ollama",  // Ollama não precisa de key real
+        "api": "openai-completions",
+        "models": [
+          { "id": "llama3", "name": "Llama 3 (Local)" },
+          { "id": "mistral", "name": "Mistral (Local)" }
+        ]
+      }
+    }
+  },
+
+  // ============================================================
+  // CHANNELS — Canais de mensagem
+  // ============================================================
+  // Configure apenas os canais que você vai usar.
+  // Tokens podem vir do .env ou serem colocados aqui.
+  // ============================================================
+  "channels": {
+    // Telegram
+    "telegram": {
+      "botToken": "${TELEGRAM_BOT_TOKEN}",
+      // Política de DM: "pairing" (verificação), "allowlist" (whitelist),
+      // "open" (qualquer um — NÃO recomendado), "disabled"
+      "dmPolicy": "pairing",
+      // Política de grupo: "mention" (só quando mencionado),
+      // "open" (todas msgs), "disabled"
+      "groupPolicy": "mention"
+    },
+
+    // Discord
+    "discord": {
+      "botToken": "${DISCORD_BOT_TOKEN}",
+      "applicationId": "${DISCORD_APPLICATION_ID}"
+    },
+
+    // WhatsApp — usa QR code, não precisa de config aqui
+    // O modelo Whisper é baixado na primeira execução e cacheado em:
+    // ~/.openclaw/.cache/whisper/
+    // Rode: docker compose run --rm cli channels login
+    "whatsapp": {}
+  },
+
+  // ============================================================
+  // SKILLS — Habilidades do agente
+  // ============================================================
+  // Skills são scripts que o agente pode executar.
+  // Instaladas em: ~/.openclaw/skills/
+  // ============================================================
+  "skills": {
+    // Skills bundled permitidas (vazio = todas)
+    "allowBundled": [],
+
+    // Configurações de instalação
+    "install": {
+      // Gerenciador de pacotes Node para skills
+      "nodeManager": "npm",  // npm | pnpm | yarn | bun
+      // Preferir Homebrew se disponível
+      "preferBrew": false
+    },
+
+    // Configurações por skill
+    "entries": {
+      // Exemplo: skill de imagem
+      // "image-lab": {
+      //   "apiKey": "${GEMINI_API_KEY}",
+      //   "enabled": true
+      // },
+
+      // Exemplo: desabilitar uma skill
+      // "some-skill": {
+      //   "enabled": false
+      // }
+    }
+  },
+
+  // ============================================================
+  // PLUGINS — Extensões do OpenClaw
+  // ============================================================
+  "plugins": {
+    "enabled": true,
+    // Allowlist de plugins (vazio = todos permitidos)
+    "allow": [],
+    // Denylist (ganha sobre allow)
+    "deny": [],
+
+    // Configurações por plugin
+    "entries": {
+      // Exemplo: plugin de voz
+      // "voice-call": {
+      //   "enabled": true,
+      //   "config": { "provider": "twilio" }
+      // }
+    }
+  },
+
+  // ============================================================
+  // BROWSER — Automação web
+  // ============================================================
+  // O agente pode navegar na web com Chromium.
+  // ============================================================
+  "browser": {
+    "enabled": true,
+    // Permite executar JavaScript nas páginas
+    "evaluateEnabled": true,
+
+    // Perfil padrão
+    "defaultProfile": "openclaw",
+
+    // Política de segurança: bloqueia acesso a redes privadas
+    // Só mude se confiar no agente e precisar acessar serviços internos
+    "ssrfPolicy": {
+      "dangerouslyAllowPrivateNetwork": false
+    },
+
+    // Limpeza de abas inativas
+    "tabCleanup": {
+      "enabled": true,
+      "idleMinutes": 120,
+      "maxTabsPerSession": 8
+    },
+
+    // Perfis de browser
+    "profiles": {
+      "openclaw": {
+        "cdpPort": 18800,
+        "color": "#FF4500"
+      }
+    }
+  },
+
+  // ============================================================
+  // TOOLS — Política de ferramentas
+  // ============================================================
+  "tools": {
+    // Política de execução de comandos
+    "exec": {
+      // Bloqueia comandos perigosos
+      "deny": [
+        "rm -rf /",
+        "mkfs",
+        "dd if=/dev/zero",
+        "chmod 777 /",
+        "chown -R /"
+      ]
+    },
+
+    // Web fetch — busca de URLs
+    "web": {
+      "fetch": {
+        // Permite buscar qualquer URL (padrão)
+        // Para restringir, use um allowlist
+        "allowAllUrls": true
+      }
+    }
+  },
+
+  // ============================================================
+  // ENV — Variáveis de ambiente inline
+  // ============================================================
+  // Aplicadas apenas se não existirem no ambiente do processo.
+  // Útil para chaves que não estão no .env do host.
+  // ============================================================
+  "env": {
+    // Exemplo:
+    // "OPENAI_API_KEY": "sk-...",
+    // "GEMINI_API_KEY": "..."
+  },
+
+  // ============================================================
+  // LOGGING — Configuração de logs
+  // ============================================================
+  "logging": {
+    // Nível: "debug", "info", "warn", "error"
+    "level": "info",
+    // Estilo: "pretty" (colorido), "compact", "json"
+    "consoleStyle": "pretty",
+    // Redact sensitive data em logs
+    "redactSensitive": "tools"
+  },
+
+  // ============================================================
+  // DISCOVERY — Descoberta de serviços
+  // ============================================================
+  "discovery": {
+    // mDNS/Bonjour — desabilitado em Docker (não funciona em bridge)
+    "mdns": {
+      "mode": "off"
+    }
+  },
+
+  // ============================================================
+  // HOOKS — Webhooks para integrações externas
+  // ============================================================
+  // Permite que serviços externos enviem mensagens ao agente.
+  // ============================================================
+  // "hooks": {
+  //   "enabled": true,
+  //   "token": "${OPENCLAW_HOOKS_TOKEN}",
+  //   "path": "/hooks",
+  //   "mappings": [
+  //     {
+  //       "match": { "path": "gmail" },
+  //       "action": "agent",
+  //       "name": "Gmail"
+  //     }
+  //   ]
+  // },
+
+  // ============================================================
+  // MCP — Model Context Protocol servers
+  // ============================================================
+  // Conecta a servidores MCP externos para ferramentas extras.
+  // ============================================================
+  // "mcp": {
+  //   "servers": {
+  //     "docs": {
+  //       "command": "npx",
+  //       "args": ["-y", "@modelcontextprotocol/server-fetch"]
+  //     }
+  //   }
+  // },
+
+  // ============================================================
+  // UI — Aparência da interface
+  // ============================================================
+  "ui": {
+    // Cor de destaque
+    "seamColor": "#FF4500",
+    // Identidade do assistente
+    "assistant": {
+      "name": "OpenClaw",
+      "avatar": "🦞"
+    }
+  }
+}
