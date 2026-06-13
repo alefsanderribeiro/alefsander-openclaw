@@ -120,13 +120,13 @@ services:
     # Para verificar se a GPU está disponível no container:
     #   docker compose exec gateway nvidia-smi
     # ----------------------------------------------------------
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all   # Usa todas as GPUs disponíveis
-              capabilities: [gpu]
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all   # Usa todas as GPUs disponíveis
+    #           capabilities: [gpu]
 
     # ----------------------------------------------------------
     # Portas — Acesso ao Gateway
