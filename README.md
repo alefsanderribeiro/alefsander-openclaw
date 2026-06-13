@@ -3,12 +3,13 @@
 OpenClaw personalizado em Docker com ferramentas locais integradas:
 Whisper (transcrição de áudio), PDF/OCR, Browser automation, ffmpeg, e mais.
 
-## Pré-requisitos
+## Pre-requisitos
 
 - [Docker](https://docs.docker.com/get-docker/) + Docker Compose v2
 - Bash v4+ (macOS: `brew install bash`)
-- 2 GB+ RAM disponível
+- 2 GB+ RAM disponivel
 - Pelo menos uma chave de API de IA (Anthropic, OpenAI, Gemini, etc.)
+- [Tailscale](https://tailscale.com/download) instalado no servidor (para acesso remoto)
 
 ## Quick Start
 
@@ -39,9 +40,90 @@ O script vai:
 - Rodar o onboarding interativo
 - Iniciar o gateway
 
-### 4. Acesse
+### 4. Acesse via Tailscale (recomendado)
 
-Abra no navegador: **http://127.0.0.1:18789/**
+Apos o setup, use o [Tailscale](https://tailscale.com) para acessar o gateway de
+**qualquer dispositivo** (PC, celular, notebook) sem configurar roteador ou DNS.
+
+```bash
+# Descubra o IP Tailscale do servidor
+tailscale ip -4
+# Exemplo: 100.x.x.x
+
+# Ative HTTPS automatico (resolve erro de "contexto seguro")
+sudo tailscale serve --bg --https=443 18789
+```
+
+Acesse no navegador de qualquer dispositivo na mesma conta Tailscale:
+**https://100.x.x.x/** (substitua pelo IP do seu servidor)
+
+---
+
+## Acesso Remoto via Tailscale
+
+O [Tailscale](https://tailscale.com) cria uma rede privada entre seus dispositivos.
+Com ele, voce acessa o OpenClaw de **qualquer lugar** (casa, trabalho, 4G) sem
+abrir portas no roteador ou configurar DNS.
+
+### 1. Instale o Tailscale no servidor
+
+```bash
+# Ubuntu/Debian
+curl -fsSL https://tailscale.com/install.sh | sudo sh
+sudo tailscale up
+# Siga o link para autenticar no navegador
+```
+
+### 2. Obtenha o IP Tailscale do servidor
+
+```bash
+tailscale ip -4
+# Exemplo: 100.106.23.41
+```
+
+### 3. Ative o HTTPS (obrigatorio)
+
+O navegador precisa de HTTPS para criar a identidade do dispositivo.
+O Tailscale Serve gera um certificado automaticamente:
+
+```bash
+sudo tailscale serve --bg --https=443 18789
+```
+
+Agora o gateway esta disponivel em: **https://100.x.x.x/** (substitua pelo IP)
+
+### 4. Aprovacao de dispositivo (primeiro acesso)
+
+Na **primeira vez** que um dispositivo novo acessar, o gateway pede aprovacao:
+
+1. Abra https://100.x.x.x/ no navegador do outro dispositivo
+2. Veja o erro com um `requestId` (ex: `36d046b6-...`)
+3. No servidor, aprove:
+
+```bash
+sudo docker compose exec gateway openclaw devices approve 36d046b6-...
+```
+
+4. Volte ao navegador e conecte com a senha
+
+> **Cada dispositivo precisa de aprovacao apenas UMA vez.** Depois disso, entra
+> direto com a senha.
+
+### 5. Gerenciar dispositivos aprovados
+
+```bash
+# Listar dispositivos
+sudo docker compose exec gateway openclaw devices list
+
+# Remover acesso de um dispositivo (ex: celular perdido)
+sudo docker compose exec gateway openclaw devices remove <id>
+```
+
+### 6. Acessar de qualquer dispositivo
+
+- **PC ou notebook**: Instale Tailscale, logue na mesma conta, abra https://100.x.x.x/
+- **Celular (iOS/Android)**: Instale Tailscale, logue, abra https://100.x.x.x/
+- **Aprovacao**: So precisa fazer 1x por dispositivo
 
 ---
 
@@ -66,6 +148,18 @@ docker compose run --rm cli onboard --no-install-daemon
 
 # 5. Inicie o gateway
 docker compose up -d
+```
+
+### Acesso via Tailscale
+
+Se tiver Tailscale, pule o passo 5 e use:
+```bash
+# Ativar HTTPS
+sudo tailscale serve --bg --https=443 18789
+
+# Obter URL
+tailscale ip -4
+# Acesse: https://100.x.x.x/
 ```
 
 ---
