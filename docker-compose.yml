@@ -110,6 +110,16 @@ services:
       # e fica salvo aqui para não precisar baixar de novo
       - ${OPENCLAW_CONFIG_DIR:-$HOME/.openclaw}/.cache/whisper:/home/node/.cache/whisper
 
+      # ----------------------------------------------------------
+      # MOUNTS EXTRAS (descomente para adicionar pastas do host)
+      # Formato: /caminho/no/host:/caminho/no/container:rw
+      # Exemplo:
+      # - /home/alefsander/Documentos:/home/node/Documentos:rw
+      # - /home/alefsander/projetos:/home/node/projetos:ro
+      # ----------------------------------------------------------
+      # - ${OPENCLAW_EXTRA_MOUNTS}
+
+
     # ----------------------------------------------------------
     # GPU NVIDIA — Aceleração para Whisper e inferência local
     # ----------------------------------------------------------
@@ -223,6 +233,13 @@ services:
       - ${HOME}/.config/opencode:/home/node/.config/opencode:rw
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${OPENCLAW_CONFIG_DIR:-$HOME/.openclaw}/.cache/whisper:/home/node/.cache/whisper
+
+      # ----------------------------------------------------------
+      # MOUNTS EXTRAS (descomente para adicionar pastas do host)
+      # - /home/alefsander/Documentos:/home/node/Documentos:rw
+      # ----------------------------------------------------------
+      # - ${OPENCLAW_EXTRA_MOUNTS}
+
 
     # Compartilha a rede com o gateway para acessar via localhost
     network_mode: "service:gateway"
