@@ -61,7 +61,7 @@ MONITOR_TAGS = {
     "Docker - homeassistant":      ["servicos"],
     "Home Assistant (interno)":    ["servicos"],
     # ---- SITES (externos) ----
-    "Site pessoal - alefsander.dev": ["sites"],
+    "Site pessoal - SEU_DOMINIO.com": ["sites"],
     "Site empresa - msservicos.com": ["sites"],
 }
 

@@ -92,7 +92,7 @@ No final: Orion **não precisa da senha do cofre do Alef**. Ele tem o **próprio
 
 ```bash
 # 1. Configurar servidor
-BW_AGENT=orion /home/node/.openclaw/workspace/bw config server https://vaultwarden.alefsander.dev
+BW_AGENT=orion /home/node/.openclaw/workspace/bw config server https://vaultwarden.SEU_DOMINIO.com
 
 # 2. Login com API key (Alef gera as keys no web vault)
 BW_AGENT=orion /home/node/.openclaw/workspace/bw login --apikey

@@ -30,7 +30,7 @@ alvos = [
     {"type": MonitorType.DOCKER, "name": "Docker - atelie-web",
      "kwargs": {"docker_container": "atelie-web", "docker_host": DOCKER_HOST, "interval": 60}},
     {"type": MonitorType.HTTP, "name": "Ateliê ERP (HTTP)",
-     "kwargs": {"url": "https://atelie.alefsander.dev/login", "interval": 60,
+     "kwargs": {"url": "https://atelie.SEU_DOMINIO.com/login", "interval": 60,
                 "accepted_statuscodes": ["200-299", "300-399"]}},
     {"type": MonitorType.DOCKER, "name": "Docker - homeassistant",
      "kwargs": {"docker_container": "homeassistant", "docker_host": DOCKER_HOST, "interval": 60}},

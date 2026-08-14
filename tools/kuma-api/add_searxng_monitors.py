@@ -2,8 +2,8 @@
 """
 Adiciona monitores do SearXNG no Uptime Kuma (idempotente).
 - Docker: container searxng
-- HTTP: https://search.alefsander.dev
-- SSL: search.alefsander.dev
+- HTTP: https://search.SEU_DOMINIO.com
+- SSL: search.SEU_DOMINIO.com
 Aplica alerta Telegram (notif_id=1) nos monitores novos.
 """
 import os, time
@@ -29,10 +29,10 @@ alvos = [
     {"type": MonitorType.DOCKER, "name": "Docker - searxng",
      "kwargs": {"docker_container": "searxng", "interval": 60}},
     {"type": MonitorType.HTTP, "name": "SearXNG (HTTP)",
-     "kwargs": {"url": "https://search.alefsander.dev", "interval": 60,
+     "kwargs": {"url": "https://search.SEU_DOMINIO.com", "interval": 60,
                 "accepted_statuscodes": ["200-299", "300-399"]}},
-    {"type": MonitorType.HTTP, "name": "SSL - search.alefsander.dev",
-     "kwargs": {"url": "https://search.alefsander.dev", "interval": 86400}},
+    {"type": MonitorType.HTTP, "name": "SSL - search.SEU_DOMINIO.com",
+     "kwargs": {"url": "https://search.SEU_DOMINIO.com", "interval": 86400}},
 ]
 
 monitors = api.get_monitors()

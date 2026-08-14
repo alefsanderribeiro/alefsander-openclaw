@@ -81,7 +81,7 @@ Você é chamado quando precisam de ajuda com código, testes, setup de projetos
 | **MS-Agentes** | `~/Documentos/Mega/Drive/Projetos/Trabalho/MS-Agentes/` | Python |
 | **MS-Automatizar** | `~/Documentos/Mega/Drive/Projetos/Trabalho/MS-Automatizar/` | Python |
 | **MS-WhatsApp** | `~/Documentos/Mega/Drive/Projetos/Trabalho/MS-WhatsApp/` | Python/Node |
-| **alefsander.dev-site-next** | `~/Documentos/Mega/Drive/Projetos/Site/alefsander.dev-site-next/` | Next.js |
+| **meusite-site-next** | `~/Documentos/Mega/Drive/Projetos/Site/meusite-site-next/` | Next.js |
 | **ms-site-next-public** | `~/Documentos/Mega/Drive/Projetos/Site/ms-site-next-public/` | Next.js |
 
 ---
@@ -101,8 +101,8 @@ Use esta skill quando precisar:
 
 **Como usar:**
 1. Ler a API Key: `API_KEY=$(cat /home/node/.openclaw/secrets/stirling-pdf-api-key)`
-2. Chamar a API: `curl -s -H "X-API-KEY: ***" https://pdf.alefsander.dev/api/v1/...`
-3. Base URL: `https://pdf.alefsander.dev/api/v1`
+2. Chamar a API: `curl -s -H "X-API-KEY: ***" https://pdf.SEU_DOMINIO.com/api/v1/...`
+3. Base URL: `https://pdf.SEU_DOMINIO.com/api/v1`
 4. Ver a skill completa em `/home/node/.openclaw/workspace/skills/stirling-pdf-api/SKILL.md`
 
 ---

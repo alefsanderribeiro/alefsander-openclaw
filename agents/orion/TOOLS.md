@@ -38,7 +38,7 @@ Se precisar rodar scripts Playwright diretamente:
 - **Config:** `/home/node/.openclaw/secrets/bw-orion-config/Bitwarden CLI/data.json`
 - **Variável:** `BW_AGENT=orion` (sempre usar)
 - **URL servidor (interno):** `https://localhost:8443` (via proxy TLS local — ver abaixo)
-- **URL pública (NÃO resolve no container):** `https://vaultwarden.alefsander.dev` (ENOTFOUND)
+- **URL pública (NÃO resolve no container):** `https://vaultwarden.SEU_DOMINIO.com` (ENOTFOUND)
 - **Org:** `openclaw-agents` (compartilhada pelo Alef)
 
 > ⚠️ O wrapper `bw` em `/home/node/.openclaw/workspace/bw` já configura o `XDG_CONFIG_HOME` automaticamente para cada agente. Basta usar `BW_AGENT=orion`.

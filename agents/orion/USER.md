@@ -33,5 +33,5 @@
 ## Links Importantes
 
 - **LinkedIn:** https://linkedin.com/in/alefsanderribeiro
-- **Vaultwarden:** https://vaultwarden.alefsander.dev
-- **OpenClaw:** https://openclaw.alefsander.dev
+- **Vaultwarden:** https://vaultwarden.SEU_DOMINIO.com
+- **OpenClaw:** https://openclaw.SEU_DOMINIO.com

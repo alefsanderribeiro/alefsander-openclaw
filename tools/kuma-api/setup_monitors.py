@@ -45,7 +45,7 @@ docker_containers = [
 
 # Monitor HTTP: verifica se o site responde (e retorna HTTP 200)
 http_monitors = [
-    ("OpenClaw Gateway (HTTP)", "https://openclaw.alefsander.dev"),
+    ("OpenClaw Gateway (HTTP)", "https://openclaw.SEU_DOMINIO.com"),
     ("Vaultwarden (interno)", "http://vaultwarden:80"),
     ("Stirling-PDF (interno)", "http://stirling-pdf:8080"),
     ("Uptime Kuma (interno)", "http://uptime-kuma:3001"),
@@ -55,10 +55,10 @@ http_monitors = [
 
 # Monitor SSL/TLS: avisa antes do certificado expirar
 ssl_monitors = [
-    ("SSL - openclaw.alefsander.dev", "openclaw.alefsander.dev"),
-    ("SSL - vault.alefsander.dev", "vault.alefsander.dev"),
-    ("SSL - pdf.alefsander.dev", "pdf.alefsander.dev"),
-    ("SSL - health.alefsander.dev", "health.alefsander.dev"),
+    ("SSL - openclaw.SEU_DOMINIO.com", "openclaw.SEU_DOMINIO.com"),
+    ("SSL - vault.SEU_DOMINIO.com", "vault.SEU_DOMINIO.com"),
+    ("SSL - pdf.SEU_DOMINIO.com", "pdf.SEU_DOMINIO.com"),
+    ("SSL - health.SEU_DOMINIO.com", "health.SEU_DOMINIO.com"),
 ]
 
 # Monitor TCP: portas internas importantes

@@ -25,7 +25,7 @@ exec(command="cd ~/Documentos/Mega/Drive/Projetos/Sistema/ms-dashboard-next && n
 ~/Documentos/Mega/Drive/Projetos/Trabalho/MS-Agentes/
 ~/Documentos/Mega/Drive/Projetos/Trabalho/MS-Automatizar/
 ~/Documentos/Mega/Drive/Projetos/Trabalho/MS-WhatsApp/
-~/Documentos/Mega/Drive/Projetos/Site/alefsander.dev-site-next/
+~/Documentos/Mega/Drive/Projetos/Site/meusite-site-next/
 ~/Documentos/Mega/Drive/Projetos/Site/ms-site-next-public/
 ```
 

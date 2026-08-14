@@ -56,7 +56,7 @@ fix_http(3, ["200-299", "300-399", "400-499"])
 fix_http(4, ["200-299", "300-399"])
 
 print("\n=== Sites externos: corrigir HTTP + SSL ===")
-# id 20: alefsander.dev (200)
+# id 20: SEU_DOMINIO.com (200)
 fix_http(20, ["200-299", "300-399"])
 # id 22: msservicos.com (200)
 fix_http(22, ["200-299", "300-399"])
