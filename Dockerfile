@@ -15,8 +15,8 @@ FROM node:24-bookworm-slim
 # Metadados da imagem
 # ============================================================
 LABEL maintainer="alefsander"
-LABEL description="OpenClaw custom image with local tools (Whisper, PDF/OCR, Browser, ffmpeg, NVIDIA GPU)"
-LABEL version="1.0.0"
+LABEL description="OpenClaw custom image with local tools (Whisper, PDF/OCR, Browser, ffmpeg, NVIDIA GPU, SearXNG client, GitHub CLI, Bitwarden CLI)"
+LABEL version="2.0.0"
 
 # ============================================================
 # Instala ferramentas do sistema
@@ -27,6 +27,8 @@ LABEL version="1.0.0"
 # jq                → Parse JSON no terminal
 # htop, tmux        → Monitoramento e sessões persistentes
 # tree              → Visualizar estrutura de diretórios
+# ripgrep           → Busca rápida em texto (indexador de arquivos)
+# sqlite3           → Banco de dados local (produtos, catálogo)
 # sudo              → Permitir installs em runtime (com senha desabilitada)
 # ca-certificates   → Certificados SSL para downloads seguros
 # gnupg2            → Assinar repositórios (NVIDIA)
@@ -47,11 +49,11 @@ LABEL version="1.0.0"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     # Editores e utilitários de terminal
-    nano vim git curl wget jq htop tmux tree sudo \
+    nano vim git curl wget jq htop tmux tree ripgrep sqlite3 \
     # Certificados e GPG (necessário para repositório NVIDIA)
     ca-certificates gnupg2 \
     # Python para skills (Whisper, etc.)
-    python3 python3-pip python3-venv \
+    python3 python3-pip python3-venv python3-requests \
     # Compilação de deps nativas
     build-essential \
     # PDF e OCR
@@ -85,6 +87,14 @@ RUN echo "node ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/node \
 RUN npm install -g openclaw@latest
 
 # ============================================================
+# CLIs auxiliares (npm global)
+# ============================================================
+# gh        → GitHub CLI (skill github, automação de repos/issues)
+# @bitwarden/cli → bw — acesso ao Vaultwarden (senhas dos agentes)
+# ============================================================
+RUN npm install -g @github/cli @bitwarden/cli
+
+# ============================================================
 # Instala PyTorch com suporte a CUDA + Whisper
 # ============================================================
 # PyTorch é a dependência principal do Whisper.
@@ -104,6 +114,15 @@ RUN pip3 install --no-cache-dir --break-system-packages \
     --extra-index-url https://pypi.org/simple && \
     pip3 install --no-cache-dir --break-system-packages \
     openai-whisper
+
+# ============================================================
+# Dependências Python para scripts do workspace (scripts/)
+# ============================================================
+# requests é usado pelo indexador, extrator de ML, coletor PNCP, etc.
+# (já vem via python3-requests do apt; garantimos via pip também)
+# ============================================================
+RUN pip3 install --no-cache-dir --break-system-packages \
+    requests
 
 # ============================================================
 # Configura diretório de trabalho

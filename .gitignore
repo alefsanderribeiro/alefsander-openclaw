@@ -1,4 +1,64 @@
+# .gitignore
+
+# Segredos — nunca commitar
 .env
+.env.*
+!.env.example
+*credentials*.json
+*tokens*.json
+*secrets*
+*.pem
+*.key
+
+# Dados locais
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+.catalogo.db
+.produtos.db
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Node
+node_modules/
+ms-playwright/
+playwright-report/
+
+# Logs e temporários
+*.log
+.tmp-*/
+*.tmp
+
+# Mídia e artefatos gerados
+img_produtos_mercado_livre/
+*.png
+*.jpg
+*.jpeg
+*.webp
+!**/*.example.png
 
 # OpenCode drafts and plans
 .omo/
+
+# Kuma API venv
+tools/kuma-api/venv/
+
+# Proxy TLS (cert/key gerados localmente)
+tools/bwproxy/cert.pem
+tools/bwproxy/key.pem
+tools/bwproxy/proxy.log
+
+# WhatsApp stores (dados de sessão)
+.wacli-store-*/
+.wacli/
+wacli
+
+# Memória e estado pessoal
+memory/
+DREAMS.md
+openclaw-workspace-state.json

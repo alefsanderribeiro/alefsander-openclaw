@@ -1,428 +1,507 @@
 // ============================================================
-// OpenClaw Custom — Configuração Segura (openclaw.json)
+// OpenClaw — Configuração de Exemplo (openclaw.json)
 // ============================================================
+// Espelha a configuração REAL usada no setup de referência
+// (agentes main/dev/extrator/orion, plugins, skills, canais).
 //
 // COMO USAR:
-//   1. Copie este arquivo para openclaw.json:
-//        cp ~/.openclaw/openclaw.json.example ~/.openclaw/openclaw.json
-//
-//   2. Edite com seus valores:
-//        nano ~/.openclaw/openclaw.json
-//
-//   3. Valide a configuração:
-//        openclaw doctor --fix
+//   1. Copie este arquivo para ~/.openclaw/openclaw.json:
+//        cp openclaw.json.example ~/.openclaw/openclaw.json
+//   2. Substitua os ${VAR} pelos seus valores (ou exporte as
+//      variáveis de ambiente no .env — o OpenClaw resolve).
+//   3. Valide: openclaw doctor --fix
 //
 // FORMATO: JSON5 (permite comentários e trailing commas)
-// LOCAL: ~/.openclaw/openclaw.json
-//
-// SEGURANÇA:
-//   - Nunca commite este arquivo com chaves reais
-//   - Use ${VAR} para referenciar variáveis de ambiente
-//   - O workspace confinement limita acesso a arquivos
+// SEGURANÇA: NUNCA coloque chaves reais aqui. Use ${VAR}.
 // ============================================================
 
 {
   // ============================================================
-  // GATEWAY — Configuração do servidor principal
+  // GATEWAY — Servidor principal
   // ============================================================
   "gateway": {
-    // Modo: "local" (roda aqui) ou "remote" (conecta a outro)
     "mode": "local",
-
-    // Porta do gateway (deve bater com OPENCLAW_GATEWAY_PORT no .env)
     "port": 18789,
-
-    // Bind mode: "lan" (rede local), "loopback" (só localhost),
-    // "tailnet" (só Tailscale), "custom" (define host manualmente)
     "bind": "lan",
-
-    // Autenticação
     "auth": {
-      // Modo de auth: "token" (recomendado), "password", "none"
-      // "none" só use em loopback confiável
-      "mode": "token",
-
-      // Token de acesso — referenciado do .env
-      // Nunca coloque o valor real aqui!
-      "token": "${OPENCLAW_GATEWAY_TOKEN}",
-
-      // Rate limiting contra brute force
-      "rateLimit": {
-        "maxAttempts": 10,       // Máx tentativas falhas
-        "windowMs": 60000,       // Janela de tempo (1 min)
-        "lockoutMs": 300000,     // Bloqueio (5 min)
-        "exemptLoopback": true   // Loopback não conta
-      }
+      // "password" (senha) ou "token" (token longo)
+      "mode": "password",
+      // Senha do Control UI / API — defina uma forte
+      "password": "${OPENCLAW_GATEWAY_PASSWORD:-mude-esta-senha}"
     },
-
-    // Control UI (dashboard web)
     "controlUi": {
-      "enabled": true,
-      // Origens permitidas para o browser acessar o UI
-      // Adicione seu IP/domain se acessar remotamente
+      "allowInsecureAuth": true,
+      "dangerouslyDisableDeviceAuth": true,
       "allowedOrigins": [
         "http://localhost:18789",
-        "http://127.0.0.1:18789"
+        "http://127.0.0.1:18789",
+        "https://openclaw.alefsander.dev"
       ]
     },
-
-    // Hot reload de configuração
-    "reload": {
-      // "hybrid" = aplica mudanças seguras instantaneamente,
-      //            restart automático para mudanças críticas
-      "mode": "hybrid",
-      "debounceMs": 500  // Espera 500ms antes de aplicar
-    },
-
-    // Tools HTTP — bloqueia ferramentas perigosas via API HTTP
-    "tools": {
-      // Ferramentas bloqueadas para invocação HTTP externa
-      "deny": ["browser"],
-      // Ferramentas removidas da lista de deny padrão
-      "allow": []
-    },
-
-    // Tailscale (opcional — acesso remoto seguro)
     "tailscale": {
-      // "off" (desligado), "serve" (só tailnet), "funnel" (público)
       "mode": "off",
       "resetOnExit": false
     }
   },
 
   // ============================================================
-  // AGENTS — Configuração dos agentes de IA
+  // AGENTS — Agentes de IA
   // ============================================================
   "agents": {
     "defaults": {
-      // Modelo principal de IA
-      // Formato: "provider/modelo"
-      // Exemplos: "anthropic/claude-sonnet-4-20250514",
-      //           "openai/gpt-4o", "google/gemini-2.0-flash"
       "model": {
-        "primary": "${OPENCLAW_PRIMARY_MODEL:-anthropic/claude-sonnet-4-20250514}",
-        // Fallbacks se o principal falhar (rate limit, offline)
+        "primary": "opencode-go/deepseek-v4-flash",
         "fallbacks": [
-          "openai/gpt-4o",
-          "google/gemini-2.0-flash"
+          "opencode/deepseek-v4-flash-free"
         ]
       },
-
-      // Workspace — diretório de trabalho do agente
-      // O agente SÓ pode ler/escrever aqui e nos mounts explícitos
+      "bootstrapMaxChars": 50000,
+      "bootstrapTotalMaxChars": 300000,
+      "contextInjection": "always",
       "workspace": "/home/node/.openclaw/workspace",
-
-      // Sandbox — isola execução de código em containers Docker
-      // "off" = sem sandbox, "non-main" = sandbox para tudo exceto main,
-      // "all" = sandbox para tudo
-      "sandbox": {
-        "mode": "non-main",
-        // Escopo: "agent" (por agente), "session" (por sessão),
-        //         "shared" (compartilhado)
-        "scope": "agent"
+      // Modelos com apelidos bonitos no seletor
+      "models": {
+        "opencode-go/deepseek-v4-flash": { "alias": "DeepSeek V4 Flash" },
+        "opencode-go/deepseek-v4-pro": { "alias": "DeepSeek V4 Pro" },
+        "opencode-go/glm-5.2": { "alias": "GLM 5.2" },
+        "opencode-go/glm-5.1": { "alias": "GLM 5.1" },
+        "opencode-go/kimi-k2.7-code": { "alias": "Kimi K2.7 Code" },
+        "opencode-go/kimi-k2.6": { "alias": "Kimi K2.6" },
+        "opencode-go/mimo-v2.5": { "alias": "MiMo V2.5" },
+        "opencode-go/mimo-v2.5-pro": { "alias": "MiMo V2.5 Pro" },
+        "opencode-go/mimo-v2-omni": { "alias": "MiMo V2 Omni" },
+        "opencode-go/mimo-v2-pro": { "alias": "MiMo V2 Pro" },
+        "opencode-go/minimax-m3": { "alias": "MiniMax M3" },
+        "opencode-go/minimax-m2.7": { "alias": "MiniMax M2.7" },
+        "opencode-go/qwen3.7-max": { "alias": "Qwen3.7 Max" },
+        "opencode-go/qwen3.7-plus": { "alias": "Qwen3.7 Plus" },
+        "opencode-go/qwen3.6-plus": { "alias": "Qwen3.6 Plus" },
+        "opencode-go/qwen3.5-plus": { "alias": "Qwen3.5 Plus" },
+        "opencode-go/hy3-preview": { "alias": "HY3 Preview" },
+        "opencode/deepseek-v4-flash-free": { "alias": "DeepSeek V4 Flash Free" },
+        "opencode/mimo-v2.5-free": { "alias": "MiMo V2.5 Free" },
+        "opencode/north-mini-code-free": { "alias": "North Mini Code Free" },
+        "opencode/nemotron-3-ultra-free": { "alias": "Nemotron 3 Ultra Free" },
+        "opencode/big-pickle": { "alias": "Big Pickle" },
+        "opencode/hy3-free": { "alias": "HY3 Free" },
+        "opencode/claude-opus-4-6": { "alias": "Opus" }
       },
-
-      // Memória — persistência de contexto entre sessões
       "memorySearch": {
-        "enabled": true
+        "provider": "none",
+        "model": ""
       },
-
-      // Skills permitidas
-      // "allowBundled" = lista de skills bundled que o agente pode usar
-      // Skills instaladas em ~/.openclaw/skills/ são carregadas auto
-      "skills": {
-        "allowBundled": []  // vazio = todas permitidas
+      "compaction": {
+        "recentTurnsPreserve": 12,
+        "maxHistoryShare": 0.9,
+        "reserveTokens": 4000,
+        "notifyUser": true,
+        "truncateAfterCompaction": false
       }
-    }
+    },
+
+    // ============================================================
+    // AGENTES ESPECÍFICOS
+    // Os arquivos de identidade/instruções ficam em agents/<id>/workspace/
+    // (veja a pasta agents/ deste repositório)
+    // ============================================================
+    "list": [
+      {
+        "id": "main",
+        // Skills ativas no agente principal
+        "skills": [
+          "browser-automation",
+          "clawhub",
+          "github",
+          "google-workspace-assistant",
+          "healthcheck",
+          "home-assistant-rest",
+          "meme-maker",
+          "monitorador-de-servidor",
+          "openai-whisper",
+          "python-debugpy",
+          "skill-creator",
+          "spike",
+          "taskflow",
+          "taskflow-inbox-triage",
+          "tmux",
+          "video-frames",
+          "weather"
+        ],
+        "subagents": {
+          "allowAgents": [
+            "extrator",
+            "dev",
+            "orion"
+          ]
+        },
+        "tools": {
+          "profile": "full"
+        }
+      },
+      {
+        "id": "dev",
+        "name": "Dev",
+        "workspace": "/home/node/.openclaw/agents/dev/workspace",
+        "model": {
+          "primary": "opencode-go/deepseek-v4-flash",
+          "fallbacks": ["opencode/deepseek-v4-flash-free"]
+        },
+        "skills": [],
+        "tools": {
+          "profile": "full"
+        }
+      },
+      {
+        "id": "extrator",
+        "name": "Extrator de Produtos",
+        "workspace": "/home/node/.openclaw/agents/extrator/workspace",
+        "model": {
+          "primary": "opencode-go/deepseek-v4-flash",
+          "fallbacks": ["opencode/deepseek-v4-flash-free"]
+        },
+        "skills": [],
+        "tools": {
+          "profile": "full",
+          "allow": [
+            "web_fetch",
+            "web_search",
+            "exec",
+            "read",
+            "write",
+            "edit",
+            "memory_search",
+            "memory_get",
+            "image",
+            "pdf",
+            "message"
+          ]
+        }
+      },
+      {
+        "id": "orion",
+        "name": "Orion",
+        "workspace": "/home/node/.openclaw/agents/orion/workspace",
+        "model": {
+          "primary": "opencode-go/deepseek-v4-flash",
+          "fallbacks": ["opencode/deepseek-v4-flash-free"]
+        },
+        "skills": [],
+        "tools": {
+          "profile": "full",
+          "allow": [
+            "exec",
+            "web_search",
+            "web_fetch",
+            "read",
+            "write",
+            "edit",
+            "memory_search",
+            "memory_get",
+            "image",
+            "pdf",
+            "message"
+          ]
+        }
+      }
+    ]
   },
 
   // ============================================================
   // MODELS — Providers de IA
   // ============================================================
-  // Configure os providers que você vai usar.
-  // As chaves de API vêm do .env via ${VAR}.
+  // Neste setup: opencode (modelos free) e opencode-go (modelos
+  // principais), além de google (Gemini p/ mídia e fallback).
   // ============================================================
   "models": {
-    // "merge" = adiciona aos providers padrão
-    // "replace" = substitui completamente
     "mode": "merge",
-
     "providers": {
-      // Anthropic (Claude) — recomendado para coding
-      "anthropic": {
-        "apiKey": "${ANTHROPIC_API_KEY}"
-      },
-
-      // OpenAI (GPT)
-      "openai": {
-        "apiKey": "${OPENAI_API_KEY}"
-      },
-
-      // Google (Gemini) — free tier generoso
       "google": {
         "apiKey": "${GEMINI_API_KEY}"
       },
-
-      // OpenRouter — acesso a múltiplos modelos (inclui gratuitos)
-      "openrouter": {
-        "apiKey": "${OPENROUTER_API_KEY}"
-      },
-
-      // Groq — inferência ultra-rápida (free tier)
-      "groq": {
-        "apiKey": "${GROQ_API_KEY}"
-      },
-
-      // Mistral
-      "mistral": {
-        "apiKey": "${MISTRAL_API_KEY}"
-      },
-
-      // Cohere
-      "cohere": {
-        "apiKey": "${COHERE_API_KEY}"
-      },
-
-      // DeepSeek
-      "deepseek": {
-        "apiKey": "${DEEPSEEK_API_KEY}"
-      },
-
-      // Provider custom — qualquer endpoint OpenAI-compatible
-      // Útil para Ollama, LM Studio, etc. rodando localmente
-      "local-llm": {
-        "baseUrl": "http://host.docker.internal:11434/v1",
-        "apiKey": "ollama",  // Ollama não precisa de key real
-        "api": "openai-completions",
+      "opencode": {
+        "apiKey": "${OPENCODE_API_KEY}",
+        "baseUrl": "https://opencode.ai/zen/v1",
         "models": [
-          { "id": "llama3", "name": "Llama 3 (Local)" },
-          { "id": "mistral", "name": "Mistral (Local)" }
+          { "id": "deepseek-v4-flash-free", "name": "DeepSeek V4 Flash Free", "contextWindow": 1000000, "maxTokens": 128000, "input": ["text"] },
+          { "id": "mimo-v2.5-free", "name": "MiMo V2.5 Free", "contextWindow": 200000, "maxTokens": 32000, "input": ["text"] },
+          { "id": "north-mini-code-free", "name": "North Mini Code Free", "contextWindow": 200000, "maxTokens": 32000, "input": ["text"] },
+          { "id": "nemotron-3-ultra-free", "name": "Nemotron 3 Ultra Free", "contextWindow": 200000, "maxTokens": 32000, "input": ["text"] },
+          { "id": "big-pickle", "name": "Big Pickle", "contextWindow": 200000, "maxTokens": 32000, "input": ["text"] },
+          { "id": "hy3-free", "name": "HY3 Free", "contextWindow": 256000, "maxTokens": 65536, "input": ["text"] }
+        ]
+      },
+      "opencode-go": {
+        "apiKey": "${OPENCODE_GO_API_KEY}",
+        "baseUrl": "https://opencode.ai/zen/go/v1",
+        "models": [
+          { "id": "deepseek-v4-flash", "name": "DeepSeek V4 Flash", "contextWindow": 1000000, "maxTokens": 128000, "input": ["text"] },
+          { "id": "deepseek-v4-pro", "name": "DeepSeek V4 Pro", "contextWindow": 1000000, "maxTokens": 128000, "input": ["text"] },
+          { "id": "glm-5.2", "name": "GLM 5.2", "contextWindow": 200000, "maxTokens": 32768, "input": ["text"] },
+          { "id": "glm-5.1", "name": "GLM 5.1", "contextWindow": 200000, "maxTokens": 32768, "input": ["text"] },
+          { "id": "kimi-k2.7-code", "name": "Kimi K2.7 Code", "contextWindow": 200000, "maxTokens": 65536, "input": ["text"] },
+          { "id": "kimi-k2.6", "name": "Kimi K2.6", "contextWindow": 200000, "maxTokens": 65536, "input": ["text"] },
+          { "id": "mimo-v2.5", "name": "MiMo V2.5", "contextWindow": 1000000, "maxTokens": 128000, "input": ["text", "image"] },
+          { "id": "mimo-v2.5-pro", "name": "MiMo V2.5 Pro", "contextWindow": 1000000, "maxTokens": 128000, "input": ["text"] },
+          { "id": "mimo-v2-omni", "name": "MiMo V2 Omni", "contextWindow": 256000, "maxTokens": 65536, "input": ["text", "image"] },
+          { "id": "mimo-v2-pro", "name": "MiMo V2 Pro", "contextWindow": 1000000, "maxTokens": 128000, "input": ["text"] },
+          { "id": "minimax-m3", "name": "MiniMax M3", "contextWindow": 200000, "maxTokens": 32768, "input": ["text"] },
+          { "id": "minimax-m2.7", "name": "MiniMax M2.7", "contextWindow": 200000, "maxTokens": 32768, "input": ["text"] },
+          { "id": "qwen3.7-max", "name": "Qwen3.7 Max", "contextWindow": 1000000, "maxTokens": 128000, "input": ["text"] },
+          { "id": "qwen3.7-plus", "name": "Qwen3.7 Plus", "contextWindow": 1000000, "maxTokens": 128000, "input": ["text", "image"] },
+          { "id": "qwen3.6-plus", "name": "Qwen3.6 Plus", "contextWindow": 256000, "maxTokens": 65536, "input": ["text", "image"] },
+          { "id": "qwen3.5-plus", "name": "Qwen3.5 Plus", "contextWindow": 256000, "maxTokens": 65536, "input": ["text", "image"] },
+          { "id": "hy3-preview", "name": "HY3 Preview", "contextWindow": 256000, "maxTokens": 65536, "input": ["text"] }
         ]
       }
+    }
+  },
+
+  // ============================================================
+  // AUTH PROFILES — Como cada provider autentica
+  // ============================================================
+  "auth": {
+    "profiles": {
+      "opencode:default": { "provider": "opencode", "mode": "api_key" },
+      "opencode-go:default": { "provider": "opencode-go", "mode": "api_key" },
+      "google:default": { "provider": "google", "mode": "api_key" }
     }
   },
 
   // ============================================================
   // CHANNELS — Canais de mensagem
   // ============================================================
-  // Configure apenas os canais que você vai usar.
-  // Tokens podem vir do .env ou serem colocados aqui.
-  // ============================================================
   "channels": {
-    // Telegram
     "telegram": {
-      "botToken": "${TELEGRAM_BOT_TOKEN}",
-      // Política de DM: "pairing" (verificação), "allowlist" (whitelist),
-      // "open" (qualquer um — NÃO recomendado), "disabled"
-      "dmPolicy": "pairing",
-      // Política de grupo: "mention" (só quando mencionado),
-      // "open" (todas msgs), "disabled"
-      "groupPolicy": "mention"
+      "enabled": true,
+      "botToken": "${TELEGRAM_BOT_TOKEN}"
     },
-
-    // Discord
-    "discord": {
-      "botToken": "${DISCORD_BOT_TOKEN}",
-      "applicationId": "${DISCORD_APPLICATION_ID}"
-    },
-
-    // WhatsApp — usa QR code, não precisa de config aqui
-    // O modelo Whisper é baixado na primeira execução e cacheado em:
-    // ~/.openclaw/.cache/whisper/
-    // Rode: docker compose run --rm cli channels login
-    "whatsapp": {}
-  },
-
-  // ============================================================
-  // SKILLS — Habilidades do agente
-  // ============================================================
-  // Skills são scripts que o agente pode executar.
-  // Instaladas em: ~/.openclaw/skills/
-  // ============================================================
-  "skills": {
-    // Skills bundled permitidas (vazio = todas)
-    "allowBundled": [],
-
-    // Configurações de instalação
-    "install": {
-      // Gerenciador de pacotes Node para skills
-      "nodeManager": "npm",  // npm | pnpm | yarn | bun
-      // Preferir Homebrew se disponível
-      "preferBrew": false
-    },
-
-    // Configurações por skill
-    "entries": {
-      // Exemplo: skill de imagem
-      // "image-lab": {
-      //   "apiKey": "${GEMINI_API_KEY}",
-      //   "enabled": true
-      // },
-
-      // Exemplo: desabilitar uma skill
-      // "some-skill": {
-      //   "enabled": false
-      // }
+    "whatsapp": {
+      "accounts": {
+        "default": {
+          "enabled": true,
+          "selfChatMode": true,
+          "dmPolicy": "allowlist",
+          "allowFrom": [
+            "${WHATSAPP_OWNER_NUMBER}"
+          ],
+          "groupAllowFrom": [
+            "${WHATSAPP_OWNER_NUMBER}"
+          ]
+        }
+      },
+      "dmPolicy": "allowlist",
+      "allowFrom": [
+        "${WHATSAPP_OWNER_NUMBER}"
+      ],
+      "groupPolicy": "allowlist",
+      "groups": {
+        // Prompt especial para grupos de ofertas/produtos.
+        // Substitua o JID pelo grupo desejado e ajuste o caminho do extrator.
+        // "120363427017073978@g.us": {
+        //   "requireMention": false,
+        //   "systemPrompt": "..."
+        // }
+      },
+      "debounceMs": 0,
+      "mediaMaxMb": 50,
+      "replyToMode": "first",
+      "groupAllowFrom": [
+        "${WHATSAPP_OWNER_NUMBER}"
+      ]
     }
   },
 
   // ============================================================
-  // PLUGINS — Extensões do OpenClaw
+  // PLUGINS — Extensões
   // ============================================================
   "plugins": {
-    "enabled": true,
-    // Allowlist de plugins (vazio = todos permitidos)
-    "allow": [],
-    // Denylist (ganha sobre allow)
-    "deny": [],
-
-    // Configurações por plugin
     "entries": {
-      // Exemplo: plugin de voz
-      // "voice-call": {
-      //   "enabled": true,
-      //   "config": { "provider": "twilio" }
-      // }
-    }
-  },
-
-  // ============================================================
-  // BROWSER — Automação web
-  // ============================================================
-  // O agente pode navegar na web com Chromium.
-  // ============================================================
-  "browser": {
-    "enabled": true,
-    // Permite executar JavaScript nas páginas
-    "evaluateEnabled": true,
-
-    // Perfil padrão
-    "defaultProfile": "openclaw",
-
-    // Política de segurança: bloqueia acesso a redes privadas
-    // Só mude se confiar no agente e precisar acessar serviços internos
-    "ssrfPolicy": {
-      "dangerouslyAllowPrivateNetwork": false
-    },
-
-    // Limpeza de abas inativas
-    "tabCleanup": {
-      "enabled": true,
-      "idleMinutes": 120,
-      "maxTabsPerSession": 8
-    },
-
-    // Perfis de browser
-    "profiles": {
-      "openclaw": {
-        "cdpPort": 18800,
-        "color": "#FF4500"
+      "telegram": { "enabled": true },
+      "opencode": { "enabled": true },
+      "google": {
+        "enabled": true,
+        "config": {
+          "webSearch": { "apiKey": "${GEMINI_API_KEY}" }
+        }
+      },
+      "opencode-go": { "enabled": true },
+      "memory-core": {
+        "enabled": true,
+        "config": {
+          "dreaming": {
+            "enabled": true,
+            "frequency": "0 4 * * *",
+            "timezone": "America/Porto_Velho"
+          }
+        }
+      },
+      "browser": { "enabled": true },
+      "whatsapp": { "enabled": true },
+      "memory-wiki": {
+        "enabled": true,
+        "config": {
+          "vaultMode": "bridge",
+          "vault": {
+            "path": "~/.openclaw/wiki/main",
+            "renderMode": "native"
+          },
+          "bridge": {
+            "enabled": true,
+            "readMemoryArtifacts": true,
+            "indexDreamReports": true,
+            "indexDailyNotes": true,
+            "indexMemoryRoot": true,
+            "followMemoryEvents": true
+          },
+          "search": {
+            "backend": "shared",
+            "corpus": "all"
+          },
+          "render": {
+            "preserveHumanBlocks": true,
+            "createBacklinks": true,
+            "createDashboards": true
+          }
+        }
+      },
+      "workboard": { "enabled": true },
+      // Google Workspace (Gmail, Calendar, Drive, Tasks, Sheets)
+      "openclaw-google-workspace": {
+        "enabled": true,
+        "config": {
+          "credentialsPath": "/home/node/.openclaw/secrets/gmail-credentials.json",
+          "tokenPath": "/home/node/.openclaw/secrets/gmail-tokens.json",
+          "services": {
+            "gmail": { "enabled": true },
+            "calendar": { "enabled": true },
+            "drive": { "enabled": true, "readOnly": true },
+            "contacts": { "enabled": true },
+            "tasks": { "enabled": true },
+            "sheets": { "enabled": true }
+          }
+        }
+      },
+      // SearXNG self-hosted (busca web privada)
+      "searxng": {
+        "enabled": true,
+        "config": {
+          "webSearch": {
+            "baseUrl": "${SEARXNG_BASE_URL:-http://searxng:8080}"
+          }
+        }
       }
+    },
+    "allow": [
+      "memory-wiki",
+      "workboard",
+      "opencode-go",
+      "opencode",
+      "google",
+      "memory-core",
+      "browser",
+      "telegram",
+      "openclaw-google-workspace",
+      "searxng"
+    ],
+    "bundledDiscovery": "compat"
+  },
+
+  // ============================================================
+  // SKILLS — Habilidades
+  // ============================================================
+  "skills": {
+    "install": {
+      "nodeManager": "npm"
+    },
+    "entries": {
+      "clawhub": { "enabled": true },
+      "github": {
+        "enabled": true,
+        "env": {
+          "GH_TOKEN": "${GH_TOKEN}"
+        }
+      },
+      "wacli": { "enabled": true },
+      // Skills custom deste repo (skills/): habilitadas por padrão
+      "home-assistant-rest": { "enabled": true },
+      "monitorador-de-servidor": { "enabled": true }
     }
   },
 
   // ============================================================
-  // TOOLS — Política de ferramentas
+  // TOOLS — Ferramentas
   // ============================================================
   "tools": {
-    // Política de execução de comandos
-    "exec": {
-      // Bloqueia comandos perigosos
-      "deny": [
-        "rm -rf /",
-        "mkfs",
-        "dd if=/dev/zero",
-        "chmod 777 /",
-        "chown -R /"
-      ]
+    "profile": "coding",
+    "media": {
+      "audio": {
+        "enabled": true,
+        "models": [
+          {
+            "provider": "google",
+            "model": "gemini-2.5-flash"
+          },
+          {
+            // Whisper local (instalado na imagem Docker)
+            "type": "cli",
+            "command": "whisper",
+            "args": ["--model", "base", "--output_format", "txt", "{{MediaPath}}"],
+            "timeoutSeconds": 120
+          }
+        ]
+      }
     },
-
-    // Web fetch — busca de URLs
     "web": {
-      "fetch": {
-        // Permite buscar qualquer URL (padrão)
-        // Para restringir, use um allowlist
-        "allowAllUrls": true
+      "search": {
+        "provider": "searxng",
+        "enabled": true
       }
     }
   },
 
   // ============================================================
-  // ENV — Variáveis de ambiente inline
+  // BROWSER — Automação web (container sem sandbox)
   // ============================================================
-  // Aplicadas apenas se não existirem no ambiente do processo.
-  // Útil para chaves que não estão no .env do host.
-  // ============================================================
-  "env": {
-    // Exemplo:
-    // "OPENAI_API_KEY": "sk-...",
-    // "GEMINI_API_KEY": "..."
+  "browser": {
+    "noSandbox": true
   },
 
   // ============================================================
-  // LOGGING — Configuração de logs
+  // COMANDOS / SESSÃO
   // ============================================================
-  "logging": {
-    // Nível: "debug", "info", "warn", "error"
-    "level": "info",
-    // Estilo: "pretty" (colorido), "compact", "json"
-    "consoleStyle": "pretty",
-    // Redact sensitive data em logs
-    "redactSensitive": "tools"
+  "commands": {
+    "ownerAllowFrom": [
+      "telegram:${TELEGRAM_OWNER_ID}"
+    ]
   },
-
-  // ============================================================
-  // DISCOVERY — Descoberta de serviços
-  // ============================================================
-  "discovery": {
-    // mDNS/Bonjour — desabilitado em Docker (não funciona em bridge)
-    "mdns": {
-      "mode": "off"
+  "session": {
+    "dmScope": "per-channel-peer",
+    "reset": {
+      "mode": "idle",
+      "idleMinutes": 10080
     }
   },
 
   // ============================================================
-  // HOOKS — Webhooks para integrações externas
+  // HOOKS — Ganchos internos
   // ============================================================
-  // Permite que serviços externos enviem mensagens ao agente.
-  // ============================================================
-  // "hooks": {
-  //   "enabled": true,
-  //   "token": "${OPENCLAW_HOOKS_TOKEN}",
-  //   "path": "/hooks",
-  //   "mappings": [
-  //     {
-  //       "match": { "path": "gmail" },
-  //       "action": "agent",
-  //       "name": "Gmail"
-  //     }
-  //   ]
-  // },
+  "hooks": {
+    "internal": {
+      "enabled": true,
+      "entries": {
+        "session-memory": { "enabled": true },
+        "compaction-notifier": { "enabled": true },
+        "command-logger": { "enabled": true },
+        "bootstrap-extra-files": { "enabled": true },
+        "boot-md": { "enabled": true }
+      }
+    }
+  },
 
-  // ============================================================
-  // MCP — Model Context Protocol servers
-  // ============================================================
-  // Conecta a servidores MCP externos para ferramentas extras.
-  // ============================================================
-  // "mcp": {
-  //   "servers": {
-  //     "docs": {
-  //       "command": "npx",
-  //       "args": ["-y", "@modelcontextprotocol/server-fetch"]
-  //     }
-  //   }
-  // },
-
-  // ============================================================
-  // UI — Aparência da interface
-  // ============================================================
-  "ui": {
-    // Cor de destaque
-    "seamColor": "#FF4500",
-    // Identidade do assistente
-    "assistant": {
-      "name": "OpenClaw",
-      "avatar": "🦞"
+  "messages": {
+    "visibleReplies": "automatic",
+    "groupChat": {
+      "visibleReplies": "automatic"
     }
   }
 }

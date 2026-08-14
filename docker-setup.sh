@@ -95,6 +95,16 @@ export OPENCLAW_IMAGE="$IMAGE_NAME"
 export OPENCLAW_DOCKER_APT_PACKAGES="${OPENCLAW_DOCKER_APT_PACKAGES:-}"
 export OPENCLAW_EXTRA_MOUNTS="$EXTRA_MOUNTS"
 export OPENCLAW_HOME_VOLUME="$HOME_VOLUME_NAME"
+export OPENCLAW_DOCS_MOUNT="${OPENCLAW_DOCS_MOUNT:-}"
+export OPENCLAW_NETWORK="${OPENCLAW_NETWORK:-}"
+export OPENCODE_API_KEY="${OPENCODE_API_KEY:-}"
+export OPENCODE_GO_API_KEY="${OPENCODE_GO_API_KEY:-}"
+export GH_TOKEN="${GH_TOKEN:-}"
+export SEARXNG_BASE_URL="${SEARXNG_BASE_URL:-}"
+export HOME_ASSISTANT_URL="${HOME_ASSISTANT_URL:-}"
+export HOME_ASSISTANT_TOKEN="${HOME_ASSISTANT_TOKEN:-}"
+export TELEGRAM_OWNER_ID="${TELEGRAM_OWNER_ID:-}"
+export WHATSAPP_OWNER_NUMBER="${WHATSAPP_OWNER_NUMBER:-}"
 
 # ============================================================
 # 4. GERA TOKEN DO GATEWAY
@@ -236,6 +246,23 @@ for compose_file in "${COMPOSE_FILES[@]}"; do
 done
 
 # ============================================================
+# 5.1 REDE DOCKER EXTERNA (opcional)
+# ============================================================
+# Se OPENCLAW_NETWORK está definida, garante que a rede externa
+# existe (cria se necessário) para o container acessar serviços
+# self-hosted pelo nome (SearXNG, Home Assistant, Vaultwarden...)
+# ============================================================
+if [[ -n "$OPENCLAW_NETWORK" ]]; then
+  echo "🌐 Verificando rede externa: $OPENCLAW_NETWORK"
+  if ! docker network inspect "$OPENCLAW_NETWORK" >/dev/null 2>&1; then
+    echo "   Rede não existe — criando..."
+    docker network create "$OPENCLAW_NETWORK"
+  else
+    echo "   Rede já existe ✅"
+  fi
+fi
+
+# ============================================================
 # 6. SALVA VARIÁVEIS NO ARQUIVO .ENV
 # ============================================================
 # upsert_env atualiza ou adiciona variáveis no arquivo .env.
@@ -294,10 +321,21 @@ upsert_env "$ENV_FILE" \
   OPENCLAW_BRIDGE_PORT \
   OPENCLAW_GATEWAY_BIND \
   OPENCLAW_GATEWAY_TOKEN \
+  OPENCLAW_GATEWAY_PASSWORD \
   OPENCLAW_IMAGE \
   OPENCLAW_EXTRA_MOUNTS \
   OPENCLAW_HOME_VOLUME \
-  OPENCLAW_DOCKER_APT_PACKAGES
+  OPENCLAW_DOCKER_APT_PACKAGES \
+  OPENCLAW_DOCS_MOUNT \
+  OPENCLAW_NETWORK \
+  OPENCODE_API_KEY \
+  OPENCODE_GO_API_KEY \
+  GH_TOKEN \
+  SEARXNG_BASE_URL \
+  HOME_ASSISTANT_URL \
+  HOME_ASSISTANT_TOKEN \
+  TELEGRAM_OWNER_ID \
+  WHATSAPP_OWNER_NUMBER
 
 echo "✅ Configurações salvas em $ENV_FILE"
 
