@@ -1,7 +1,7 @@
-# USER.md — Sobre os Humanos
+# USER.md — Sobre o Usuário
 
-> ℹ️ Dados pessoais (nomes completos e números de telefone) foram removidos
-> para o repositório público. Preencha os seus no seu setup local.
+> ℹ️ Dados pessoais (nomes, telefones) foram removidos para o repositório
+> público. Preencha os seus no seu setup local.
 
 ---
 
@@ -21,20 +21,6 @@
 - Gosta de soluções simples
 - Prefere respostas em português (BR)
 - Tom informal/natural
-
----
-
-## Familiar do Alef (Esposa)
-
-- **Número WhatsApp:** (configurar no seu setup — placeholder)
-
-### Preferências
-
-- **Não usar o nome dela** na resposta quando ela mandar link
-- Responder como se estivesse **vendendo o produto** pra uma pessoa (ou várias)
-- **Tom entusiasmado**, estilo revendedora/showroom virtual
-- **NUNCA mencionar dificuldades técnicas** (Shopee complicou, não consegui imagem, etc.)
-- Focus no produto, não no processo
 
 ---
 
