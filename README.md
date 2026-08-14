@@ -19,6 +19,35 @@ Assistant, Uptime Kuma/Netdata) e 4 agentes pré-configurados.
 | **Tools** | proxy TLS para Vaultwarden (`tools/bwproxy`), scripts de monitoramento Kuma (`tools/kuma-api`) |
 | **Imagem** | Node 24 + Debian, Whisper (CUDA), ffmpeg, Chromium, Tesseract OCR, poppler, ripgrep, sqlite3, gh, bw |
 
+## 📚 Documentação
+
+| Guia | Conteúdo |
+|---|---|
+| [docs/AGENTES.md](docs/AGENTES.md) | Arquitetura dos 4 agentes, delegação, como adicionar agente novo |
+| [docs/SCRIPTS.md](docs/SCRIPTS.md) | Todos os scripts com exemplos de uso (ML, PNCP, indexador, WhatsApp) |
+| [docs/INTEGRACOES.md](docs/INTEGRACOES.md) | SearXNG, Home Assistant, Vaultwarden, Kuma/Netdata, Google Workspace, canais |
+| [docs/SEGURANCA.md](docs/SEGURANCA.md) | Boas práticas, checklist anti-vazamento, plano de resposta a incidente |
+
+## Arquitetura
+
+```
+Você (WhatsApp / Telegram / WebChat)
+   │
+   ▼
+┌─────────────────────────────────────┐
+│         main (Aura ✨)              │  orquestradora
+│  delega: dev · extrator · orion    │
+└──────────────┬──────────────────────┘
+               │
+   ┌───────────┼───────────────┐
+   ▼           ▼               ▼
+  dev 💻    extrator 🔍      orion 🌌
+ código     produtos ML      LinkedIn
+ testes     e-commerce       vagas
+
+Integrações: SearXNG · Home Assistant · Vaultwarden · Uptime Kuma · Netdata
+```
+
 ## Pré-requisitos
 
 - [Docker](https://docs.docker.com/get-docker/) + Docker Compose v2
@@ -277,6 +306,7 @@ alefsander-openclaw/
 ├── Scripts/                # Scripts de automação (ML, indexador, PNCP, wacli)
 ├── skills/                 # Skills custom (home-assistant-rest, monitorador)
 ├── tools/                  # bwproxy (Vaultwarden), kuma-api (monitoramento)
+├── docs/                   # Documentação completa (agentes, scripts, integrações, segurança)
 └── README.md
 ```
 
