@@ -6,11 +6,11 @@ Essa é a base de todas as integrações:
 
 ```bash
 # Crie a rede uma única vez (o docker-setup.sh faz isso automaticamente)
-docker network create vaultwarden_tailscale-net
+docker network create selfhosted-net
 
 # Conecte os serviços à rede (exemplos)
-docker network connect vaultwarden_tailscale-net searxng
-docker network connect vaultwarden_tailscale-net homeassistant
+docker network connect selfhosted-net searxng
+docker network connect selfhosted-net homeassistant
 ```
 
 | Serviço | Hostname no container | Uso |

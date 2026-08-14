@@ -111,10 +111,10 @@ para acessar serviços self-hosted pelo nome:
 
 ```bash
 # Crie a rede uma única vez
-docker network create vaultwarden_tailscale-net
+docker network create selfhosted-net
 
 # Depois conecte os containers dos serviços a ela (ex:)
-docker network connect vaultwarden_tailscale-net searxng
+docker network connect selfhosted-net searxng
 ```
 
 Se a rede não existir, o `docker-setup.sh` cria. Deixe
@@ -339,7 +339,7 @@ ss -tlnp | grep 18789
 
 ```bash
 # Verifique se o container está na rede
-docker network inspect vaultwarden_tailscale-net | grep -A2 openclaw
+docker network inspect selfhosted-net | grep -A2 openclaw
 
 # Teste resolução de nome
 docker compose exec gateway getent hosts searxng

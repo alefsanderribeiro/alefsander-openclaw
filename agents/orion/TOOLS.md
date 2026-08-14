@@ -45,7 +45,7 @@ Se precisar rodar scripts Playwright diretamente:
 
 ### ⚠️ Proxy TLS local (OBRIGATÓRIO desde 09/08/2026)
 
-O bw CLI 2026.6.0 **bloqueia HTTP** (exige HTTPS) e o domínio público não resolve dentro do container Docker. Solução: proxy TLS local que escuta em `https://localhost:8443` e encaminha pro `http://vaultwarden` (172.20.0.2:80, rede docker).
+O bw CLI 2026.6.0 **bloqueia HTTP** (exige HTTPS) e o domínio público não resolve dentro do container Docker. Solução: proxy TLS local que escuta em `https://localhost:8443` e encaminha pro `http://vaultwarden` (vaultwarden:80, rede docker).
 
 ```bash
 # 1. Subir o proxy (se não estiver rodando)

@@ -29,7 +29,7 @@ if hosts:
 else:
     print("Registrando Docker Host via socket local...")
     result = api.add_docker_host(
-        name="servidor-ubuntu-home (socket local)",
+        name="servidor-local (socket local)",
         dockerType=DockerType.SOCKET,
         dockerDaemon="/var/run/docker.sock",
     )
@@ -56,10 +56,10 @@ docker_containers = [
     "ms-automatizar-mongodb",
     "ms-automatizar-redis",
     "ms-automatizar-whatsapp",
-    "vaultwarden_server",
+    "vaultwarden",
     "stirling-pdf",
-    "caddy-proxy-tailscale",
-    "alefsander-openclaw-gateway-1",
+    "caddy-proxy",
+    "openclaw-gateway-1",
     "searxng",
 ]
 

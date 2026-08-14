@@ -29,7 +29,7 @@ services:
     # self-hosted pelo nome: searxng, homeassistant, vaultwarden,
     # uptime-kuma, netdata, etc.
     # Crie a rede antes (uma vez):
-    #   docker network create vaultwarden_tailscale-net
+    #   docker network create selfhosted-net
     # Deixe OPENCLAW_NETWORK vazio no .env se não usar.
     # ----------------------------------------------------------
     networks:

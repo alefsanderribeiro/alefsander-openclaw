@@ -44,15 +44,15 @@ MONITOR_TAGS = {
     "Docker - ms-automatizar-redis":    ["ms-automatizar"],
     "Docker - ms-automatizar-whatsapp": ["ms-automatizar"],
     # ---- INFRA (servidor) ----
-    "Docker - caddy-proxy-tailscale":     ["infra"],
+    "Docker - caddy-proxy":     ["infra"],
     "Docker - uptime-kuma":               ["infra"],
     "Uptime Kuma (interno)":              ["infra"],
     "Docker - netdata":                   ["infra"],
     "Netdata (interno)":                  ["infra"],
-    "Docker - alefsander-openclaw-gateway-1": ["infra"],
+    "Docker - openclaw-gateway-1": ["infra"],
     "OpenClaw Gateway (HTTP)":            ["infra"],
     # ---- SERVIÇOS (aplicações) ----
-    "Docker - vaultwarden_server": ["servicos"],
+    "Docker - vaultwarden": ["servicos"],
     "Vaultwarden (interno)":       ["servicos"],
     "Docker - stirling-pdf":       ["servicos"],
     "Stirling-PDF (interno)":      ["servicos"],

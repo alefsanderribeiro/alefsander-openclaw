@@ -5,7 +5,7 @@
 - **Fuso:** America/Porto_Velho (UTC-4)
 - **Profissão:** Desenvolvedor full-stack, automação, sites corporativos
 - **Linguagem:** Português (BR), informal
-- **Container:** Roda em Docker (hostname: servidor-ubuntu-home)
+- **Container:** Roda em Docker (hostname: servidor-local)
 - **PC dev local:** ~/documents/Drive/Projetos/Sistema/ms-dashboard-next
 
 ## Preferências Técnicas

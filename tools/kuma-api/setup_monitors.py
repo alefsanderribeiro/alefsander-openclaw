@@ -36,17 +36,17 @@ docker_containers = [
     "ms-automatizar-mongodb",
     "ms-automatizar-redis",
     "ms-automatizar-whatsapp",
-    "vaultwarden_server",
+    "vaultwarden",
     "stirling-pdf",
-    "caddy-proxy-tailscale",
-    "alefsander-openclaw-gateway-1",
+    "caddy-proxy",
+    "openclaw-gateway-1",
     "searxng",
 ]
 
 # Monitor HTTP: verifica se o site responde (e retorna HTTP 200)
 http_monitors = [
     ("OpenClaw Gateway (HTTP)", "https://openclaw.alefsander.dev"),
-    ("Vaultwarden (interno)", "http://vaultwarden_server:80"),
+    ("Vaultwarden (interno)", "http://vaultwarden:80"),
     ("Stirling-PDF (interno)", "http://stirling-pdf:8080"),
     ("Uptime Kuma (interno)", "http://uptime-kuma:3001"),
     ("Netdata (interno)", "http://netdata:19999"),

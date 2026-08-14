@@ -24,7 +24,7 @@ api.login(secrets["KUMA_USER"], secrets["KUMA_PASSWORD"])
 print("✅ Login OK")
 
 NOTIF_ID = 1  # Telegram
-DOCKER_HOST = 1  # servidor-ubuntu-home (socket local)
+DOCKER_HOST = 1  # servidor-local (socket local)
 
 alvos = [
     {"type": MonitorType.DOCKER, "name": "Docker - atelie-web",

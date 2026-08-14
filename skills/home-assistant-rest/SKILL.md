@@ -253,7 +253,7 @@ automation/config {"entity_id": "automation.desligar_luz_ao_sair_de_casa"}
 > ⚠️ Dados pessoais (endereço, nomes de cômodos reais, modelos de celular) foram
 > removidos para o repositório público — substitua pelos do seu setup.
 
-- **URL:** `http://homeassistant:8123` (rede docker `vaultwarden_tailscale-net`) · público `https://home.seu-dominio.com`
+- **URL:** `http://homeassistant:8123` (rede docker `selfhosted-net`) · público `https://home.seu-dominio.com`
 - **Token:** `~/.openclaw/secrets/homeassistant-token` (owner/admin — NÃO é usuário restrito; considerar criar usuário restrito p/ operações)
 - **Luzes (Tuya):** `light.lampada_sala`, `light.lampada_quarto` — on/off + brilho (0-255); **sem RGB** (branco ajustável); `color_temp` → HTTP 400 (bug lib tuya)
 - **Tracker:** `device_tracker.celular` (GPS via companion app) — zona home configurada no app
