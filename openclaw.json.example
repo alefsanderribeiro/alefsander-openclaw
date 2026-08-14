@@ -297,7 +297,7 @@
       "groups": {
         // Prompt especial para grupos de ofertas/produtos.
         // Substitua o JID pelo grupo desejado e ajuste o caminho do extrator.
-        // "120363427017073978@g.us": {
+        // "SEU_GRUPO_JID@g.us": {
         //   "requireMention": false,
         //   "systemPrompt": "..."
         // }

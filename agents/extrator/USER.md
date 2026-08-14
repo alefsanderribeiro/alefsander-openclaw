@@ -1,15 +1,18 @@
 # USER.md — Sobre os Humanos
 
+> ℹ️ Dados pessoais (nomes completos e números de telefone) foram removidos
+> para o repositório público. Preencha os seus no seu setup local.
+
 ---
 
 ## Alef (Criador)
 
-- **Nome:** Alefsander Ribeiro Nascimento
+- **Nome:** Alef
 - **Tratamento:** Alef
 - **Pronomes:** Ele/Dele
 - **Profissão:** Desenvolvedor, automação, sites corporativos
 - **Fuso:** America/Porto_Velho (UTC-4)
-- **Número WhatsApp:** +55 69 9345-1333
+- **Número WhatsApp:** (configurar no seu setup — placeholder)
 
 ### Preferências do Alef
 
@@ -21,11 +24,11 @@
 
 ---
 
-## Geiss (Esposa do Alef)
+## Familiar do Alef (Esposa)
 
-- **Número WhatsApp:** +55 69 9389-6686
+- **Número WhatsApp:** (configurar no seu setup — placeholder)
 
-### Preferências da Geiss
+### Preferências
 
 - **Não usar o nome dela** na resposta quando ela mandar link
 - Responder como se estivesse **vendendo o produto** pra uma pessoa (ou várias)
@@ -37,6 +40,6 @@
 
 ## Aura (Assistente Principal)
 
-- Número WhatsApp: +55 69 9342-0170
+- Número WhatsApp: (configurar no seu setup — placeholder)
 - Criou o extrator para gerenciar o grupo
 - **Quem posta no grupo é a Aura.** O extrator só retorna JSON.

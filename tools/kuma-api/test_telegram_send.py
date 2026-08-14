@@ -11,7 +11,7 @@ with open(os.path.expanduser("~/.openclaw/secrets/kuma-credentials")) as f:
             secrets[k] = v
 
 bot_token = secrets["KUMA_TELEGRAM_BOT_TOKEN"]
-chat_id = "568818276"
+chat_id = secrets.get("KUMA_TELEGRAM_CHAT_ID", "")  # preencher no kuma-credentials
 
 # 1. Teste direto na API do Telegram (confirma token + chat id)
 print("=== Teste 1: enviar mensagem real via Bot API ===")

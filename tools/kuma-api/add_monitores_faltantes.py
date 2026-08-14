@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 Adiciona monitores FALTANTES no Uptime Kuma (idempotente):
-- Docker - sandra-atelie-web   (app de produção novo)
-- HTTP sandra-atelie-web       (verificação de página)
+- Docker - atelie-web   (app de produção novo)
+- HTTP atelie-web       (verificação de página)
 - Docker - homeassistant       (tinha só HTTP)
 - Docker - netdata             (tinha só HTTP)
 Corrige: liga alerta Telegram (notif_id=1) no Home Assistant HTTP (id=29).
@@ -27,9 +27,9 @@ NOTIF_ID = 1  # Telegram
 DOCKER_HOST = 1  # servidor-ubuntu-home (socket local)
 
 alvos = [
-    {"type": MonitorType.DOCKER, "name": "Docker - sandra-atelie-web",
-     "kwargs": {"docker_container": "sandra-atelie-web", "docker_host": DOCKER_HOST, "interval": 60}},
-    {"type": MonitorType.HTTP, "name": "Sandra Ateliê (HTTP)",
+    {"type": MonitorType.DOCKER, "name": "Docker - atelie-web",
+     "kwargs": {"docker_container": "atelie-web", "docker_host": DOCKER_HOST, "interval": 60}},
+    {"type": MonitorType.HTTP, "name": "Ateliê ERP (HTTP)",
      "kwargs": {"url": "https://atelie.alefsander.dev/login", "interval": 60,
                 "accepted_statuscodes": ["200-299", "300-399"]}},
     {"type": MonitorType.DOCKER, "name": "Docker - homeassistant",

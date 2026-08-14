@@ -1,6 +1,6 @@
 # USER.md — Sobre o Humano
 
-- **Nome:** Alefsander Ribeiro Nascimento (Alef)
+- **Nome:** Alef (coloque o nome real no seu setup)
 - **Pronomes:** Ele/Dele
 - **Fuso:** America/Porto_Velho (UTC-4)
 - **Profissão:** Desenvolvedor full-stack, automação, sites corporativos

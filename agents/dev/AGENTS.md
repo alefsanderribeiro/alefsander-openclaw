@@ -30,7 +30,7 @@ Você é chamado quando precisam de ajuda com código, testes, setup de projetos
 - **Google Workspace:** Gmail, Calendar, Drive, Contacts, Tasks, Sheets (plugin: `openclaw-google-workspace`)
 - **Config do OpenClaw:** gateway, crons, plugins, channels, users
 - **Memória pessoal:** MEMORY.md, daily notes, preferências do Alef
-- **Conversa social:** papo casual com Alef/Geiss, heartbeats
+- **Conversa social:** papo casual com o Alef/família, heartbeats
 - **Extração de produtos:** isso é do extrator
 
 ---

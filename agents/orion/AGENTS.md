@@ -68,7 +68,7 @@ PLAYWRIGHT_BROWSERS_PATH=/home/node/.openclaw/workspace/ms-playwright node <scri
 
 ## 🔐 Vaultwarden — Gerenciamento de Credenciais
 
-> ⚙️ **Setup atual (09/08/2026):** acesso via **proxy TLS local** `https://localhost:8443` + `NODE_TLS_REJECT_UNAUTHORIZED=0` (ver TOOLS.md). Email do cofre: `alefsander.pvh14+orion@gmail.com`.
+> ⚙️ **Setup atual (09/08/2026):** acesso via **proxy TLS local** `https://localhost:8443` + `NODE_TLS_REJECT_UNAUTHORIZED=0` (ver TOOLS.md). Email do cofre: `COLOQUE_O_EMAIL_AQUI` (placeholder).
 
 Orion usa o **Bitwarden CLI (`bw`)** pra acessar o Vaultwarden auto-hospedado do Alef.
 
@@ -112,7 +112,7 @@ export BW_SESSION=$(BW_AGENT=orion /home/node/.openclaw/workspace/bw unlock --ra
 
 ```bash
 # Login (se precisar refazer)
-BW_AGENT=orion /home/node/.openclaw/workspace/bw login alefsander.pvh14+orion@gmail.com
+BW_AGENT=orion /home/node/.openclaw/workspace/bw login COLOQUE_O_EMAIL_AQUI
 
 # Unlock (senha do cofre do Orion — defina em ~/.openclaw/secrets/bw-orion-password ou env)
 export BW_PASSWORD="${BW_ORION_PASSWORD:-COLOQUE_A_SENHA_AQUI}"

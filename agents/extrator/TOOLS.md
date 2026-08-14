@@ -33,12 +33,12 @@ O auto-route NÃO envia imagens — só texto. Sem message(), a imagem nunca che
 **Exemplo CORRETO (funciona sempre):**
 
 ```
-message(action="send", channel="whatsapp", target="120363427017073978@g.us", media="/tmp/produto.jpg", caption="Texto com link_original")
+message(action="send", channel="whatsapp", target="COLOQUE_O_JID_DO_GRUPO", media="/tmp/produto.jpg", caption="Texto com link_original")
 ```
 
 - `action` = "send" (OBRIGATÓRIO — não esqueça!)
 - `channel` = "whatsapp"
-- `target` = "120363427017073978@g.us" (JID do grupo)
+- `target` = "COLOQUE_O_JID_DO_GRUPO" (JID do grupo — placeholder, preencher no setup local)
 - `media` = caminho completo da imagem baixada (ex: /tmp/produto.jpg)
 - `caption` = texto que aparece com a imagem (deve conter o link_original)
 

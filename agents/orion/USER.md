@@ -1,13 +1,12 @@
 # USER.md — Sobre o Humano
 
-- **Nome:** Alefsander Ribeiro Nascimento
+- **Nome:** Alef (coloque o nome real no seu setup)
 - **Tratamento:** Alef
 - **Pronomes:** Ele/dele
 - **Fuso:** America/Porto_Velho (UTC-4)
 - **Profissão:** Advogado / profissional do direito
 - **LinkedIn:** alefsanderribeiro
 - **Idioma:** Português (BR), informal
-- **Número WhatsApp:** +55 69 9345-1333
 
 ## Contexto Profissional
 

@@ -21,7 +21,7 @@ print("✅ Login OK")
 
 # ---------- Definição das tags ----------
 TAGS = [
-    {"name": "sandra",          "color": "#8b5cf6"},  # roxo
+    {"name": "atelie",          "color": "#8b5cf6"},  # roxo
     {"name": "ms-dashboard",    "color": "#3b82f6"},  # azul
     {"name": "ms-automatizar",  "color": "#22c55e"},  # verde
     {"name": "infra",           "color": "#f97316"},  # laranja
@@ -31,10 +31,10 @@ TAGS = [
 
 # Monitor -> tags (por nome exato do monitor)
 MONITOR_TAGS = {
-    # ---- SANDRA ATELIÊ ----
-    "Docker - sandra-atelie-db":  ["sandra"],
-    "Docker - sandra-atelie-web": ["sandra"],
-    "Sandra Ateliê (HTTP)":       ["sandra"],
+    # ---- ATELIÊ ERP ----
+    "Docker - atelie-db":  ["atelie"],
+    "Docker - atelie-web": ["atelie"],
+    "Ateliê ERP (HTTP)":       ["atelie"],
     # ---- MS-DASHBOARD ----
     "Docker - ms-dashboard-app":     ["ms-dashboard"],
     "Docker - ms-dashboard-redis":   ["ms-dashboard"],

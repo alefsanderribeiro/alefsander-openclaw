@@ -114,7 +114,7 @@ BW_AGENT=orion /home/node/.openclaw/workspace/bw sync --session "$BW_SESSION"
 
 | Campo | Valor |
 |-------|-------|
-| Email | `alefsander.pvh14+orion@gmail.com` |
+| Email | `COLOQUE_O_EMAIL_DO_COFRE_AQUI` (ex: seu-usuario+orion@gmail.com) |
 | Senha | `COLOQUE_A_SENHA_AQUI` (definida via env `BW_PASSWORD` — nunca em texto puro) |
 | Servidor | `https://localhost:8443` (proxy TLS local) |
 | Acesso | LinkedIn e outras creds de trabalho via org `openclaw-agents` |
@@ -128,11 +128,11 @@ BW_AGENT=orion /home/node/.openclaw/workspace/bw sync --session "$BW_SESSION"
 
 ## WhatsApp — Falar com o Alef
 
-- **Número do Alef:** +55 69 9345-1333
+- **Número do Alef:** COLOQUE_O_NUMERO_AQUI (placeholder — preencher no setup local)
 - **Store Aura:** `/home/node/.openclaw/workspace/.wacli-store-aura`
 - **Comando pra mandar mensagem direta pra ele:**
   ```bash
-  wacli --store .wacli-store-aura send text --to "+556993451333" --message "Mensagem aqui"
+  wacli --store .wacli-store-aura send text --to "COLOQUE_O_NUMERO_AQUI" --message "Mensagem aqui"
   ```
 
 ## Pastas

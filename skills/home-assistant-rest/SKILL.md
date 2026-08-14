@@ -248,14 +248,17 @@ automation/config {"entity_id": "automation.desligar_luz_ao_sair_de_casa"}
 - **Command not understood (Assist)**: reformular ou conferir se a entidade está exposta ao usuário.
 - **Entity not found**: o usuário pode não ter acesso àquela área/entidade; atualizar permissões.
 
-## Local Notes — deployment Alef (2026-08-08)
+## Local Notes — deployment de referência (2026-08-08)
 
-- **URL:** `http://homeassistant:8123` (rede docker `vaultwarden_tailscale-net`) · público `https://home.alefsander.dev`
+> ⚠️ Dados pessoais (endereço, nomes de cômodos reais, modelos de celular) foram
+> removidos para o repositório público — substitua pelos do seu setup.
+
+- **URL:** `http://homeassistant:8123` (rede docker `vaultwarden_tailscale-net`) · público `https://home.seu-dominio.com`
 - **Token:** `~/.openclaw/secrets/homeassistant-token` (owner/admin — NÃO é usuário restrito; considerar criar usuário restrito p/ operações)
-- **Luzes (Tuya):** `light.pera_neo_10w_quarto_alef`, `light.pera_neo_10w_quarto_casal`, `light.pera_neo_10w_sala` — on/off + brilho (0-255); **sem RGB** (branco ajustável); `color_temp` → HTTP 400 (bug lib tuya)
-- **Tracker:** `device_tracker.pocox7` (GPS via companion app; geocoded: `sensor.pocox7_geocoded_location`) — zona home = R. Escorpião 11700 (raio 22m)
+- **Luzes (Tuya):** `light.lampada_sala`, `light.lampada_quarto` — on/off + brilho (0-255); **sem RGB** (branco ajustável); `color_temp` → HTTP 400 (bug lib tuya)
+- **Tracker:** `device_tracker.celular` (GPS via companion app) — zona home configurada no app
 - **Automações (4):** `automation.ligar_luz_ai` (duplicada — apagar), `automation.desligar_luz_ao_sair_de_casa`, `automation.teste_01`, `automation.teste_02`
-- **Integrações:** Tuya, Uptime Kuma (23 devices/monitores), mobile_app (PocoX7), backup
+- **Integrações:** Tuya, Uptime Kuma (23 devices/monitores), mobile_app, backup
 - **HA 2026.8+:** config HTTP pela UI (Settings → System → Network), não pelo YAML
 - **Testado 08/08:** 13 rotas REST → 200 ✅ (calendars/camera_proxy = 404 esperado sem integração); 60+ comandos WS testados (mapeamento de inconsistências acima)
 - **Assist em PT:** reconhece cômodos ("apaga a luz do quarto alef" → OFF); falha em frases compostas (necessário aliases nas entidades); não responde contagem ("quantas luzes existem?")
