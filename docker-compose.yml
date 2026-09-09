@@ -16,42 +16,35 @@ services:
   # ============================================================
   # GATEWAY — Serviço principal do OpenClaw
   # ============================================================
+  # Roda em background, recebe conexões dos canais de mensagem
+  # (WhatsApp, Telegram, Discord, etc.) e processa requisições
+  # da API de IA.
+  # ============================================================
   gateway:
     image: ${OPENCLAW_IMAGE:-ghcr.io/alefsanderribeiro/alefsander-openclaw:latest}
     build: .
     restart: unless-stopped
-    container_name: openclaw-gateway
 
     # ----------------------------------------------------------
-    # Rede Docker externa (opcional)
+    # Environment — Variáveis de ambiente
     # ----------------------------------------------------------
-    # Conecta o container a uma rede externa para acessar serviços
-    # self-hosted pelo nome: searxng, homeassistant, vaultwarden,
-    # uptime-kuma, netdata, etc.
-    # Crie a rede antes (uma vez):
-    #   docker network create selfhosted-net
-    # Deixe OPENCLAW_NETWORK vazio no .env se não usar.
+    # Todas as variáveis são lidas do arquivo .env na raiz do projeto.
+    # Para adicionar uma nova variável, edite o .env e rode:
+    #   docker compose down && docker compose up -d
     # ----------------------------------------------------------
-    networks:
-      - default
-      - external
-
     environment:
       # Identidade do container
       - HOME=/home/node
       - TERM=xterm-256color
       - PATH=/home/node/.openclaw/npm-global/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-      # Autenticação do Gateway
-      - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN:-}
-      - OPENCLAW_GATEWAY_PASSWORD=${OPENCLAW_GATEWAY_PASSWORD:-}
+      # Autenticação do Gateway (obrigatório para acesso não-loopback)
+      - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}
 
-      # --- Model Providers ---
-      - OPENCODE_API_KEY=${OPENCODE_API_KEY:-}
-      - OPENCODE_GO_API_KEY=${OPENCODE_GO_API_KEY:-}
-      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      # --- Model Providers (coloque pelo menos uma chave) ---
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
       - MISTRAL_API_KEY=${MISTRAL_API_KEY:-}
       - COHERE_API_KEY=${COHERE_API_KEY:-}
@@ -60,7 +53,6 @@ services:
 
       # --- Canais de Mensagem ---
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
-      - TELEGRAM_OWNER_ID=${TELEGRAM_OWNER_ID:-}
       - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN:-}
       - DISCORD_APPLICATION_ID=${DISCORD_APPLICATION_ID:-}
       - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN:-}
@@ -69,10 +61,6 @@ services:
       - WHATSAPP_SESSION=${WHATSAPP_SESSION:-}
 
       # --- Ferramentas e Skills ---
-      - GH_TOKEN=${GH_TOKEN:-}
-      - SEARXNG_BASE_URL=${SEARXNG_BASE_URL:-http://searxng:8080}
-      - HOME_ASSISTANT_URL=${HOME_ASSISTANT_URL:-http://homeassistant:8123}
-      - HOME_ASSISTANT_TOKEN=${HOME_ASSISTANT_TOKEN:-}
       - BRAVE_API_KEY=${BRAVE_API_KEY:-}
       - FIRECRAWL_API_KEY=${FIRECRAWL_API_KEY:-}
       - PERPLEXITY_API_KEY=${PERPLEXITY_API_KEY:-}
@@ -82,6 +70,7 @@ services:
       - DEEPGRAM_API_KEY=${DEEPGRAM_API_KEY:-}
 
       # --- Shell Environment ---
+      # Importa variáveis do shell profile do host (opcional)
       - OPENCLAW_LOAD_SHELL_ENV=${OPENCLAW_LOAD_SHELL_ENV:-0}
       - OPENCLAW_SHELL_ENV_TIMEOUT_MS=${OPENCLAW_SHELL_ENV_TIMEOUT_MS:-15000}
 
@@ -96,6 +85,9 @@ services:
     # ----------------------------------------------------------
     # Volumes — Persistência e acesso a arquivos
     # ----------------------------------------------------------
+    # Bind mounts: diretórios do host acessíveis dentro do container
+    # O agente SÓ pode acessar o que está montado aqui.
+    # ----------------------------------------------------------
     volumes:
       # Configuração do OpenClaw (openclaw.json, skills, memória)
       - ${OPENCLAW_CONFIG_DIR:-$HOME/.openclaw}:/home/node/.openclaw
@@ -103,44 +95,72 @@ services:
       # Workspace do agente (área de trabalho para operações de arquivo)
       - ${OPENCLAW_WORKSPACE_DIR:-$HOME/.openclaw/workspace}:/home/node/.openclaw/workspace
 
-      # Documentos do host (ex: MEGA Drive sincronizado) — opcional
-      - ${OPENCLAW_DOCS_MOUNT:-/dev/null:/dev/null}
+      # MEGA Drive (acesso aos seus arquivos de cloud)
+      - ${HOME}/Documentos/Mega/Drive:/home/node/mega-drive:rw
+
+      # Sessões do opencode (compartilhado com o host)
+      - ${HOME}/.config/opencode:/home/node/.config/opencode:rw
+
+      # Instalação do openclaw no servidor
+      - ${HOME}/alefsander-openclaw:/home/node/alefsander-openclaw:rw
+      - ${HOME}/:/home/node/:rw
 
       # Docker socket (somente leitura — para sandbox e controle)
-      - ${OPENCLAW_DOCKER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock:ro
+      # O agente pode ver containers mas NÃO criar/destruir
+      - /var/run/docker.sock:/var/run/docker.sock:ro
 
       # Cache do Whisper — persiste o modelo entre restarts
+      # O modelo é baixado na primeira execução (~74MB para "base")
+      # e fica salvo aqui para não precisar baixar de novo
       - ${OPENCLAW_CONFIG_DIR:-$HOME/.openclaw}/.cache/whisper:/home/node/.cache/whisper
 
-      # ----------------------------------------------------------
-      # MOUNTS EXTRAS (via .env → OPENCLAW_EXTRA_MOUNTS)
-      # Gerenciados pelo docker-setup.sh em docker-compose.extra.yml
-      # ----------------------------------------------------------
+      # Cache do OpenClaw — persiste o modelo entre restarts
+      - ${OPENCLAW_CONFIG_DIR:-$HOME/.openclaw}/.cache/openclaw-1000:/home/node/.cache/openclaw-1000:rw
 
-    # ----------------------------------------------------------
-    # GPU NVIDIA — Aceleração para Whisper e inferência local
-    # ----------------------------------------------------------
-    # Requer: nvidia-container-toolkit instalado no HOST.
-    # Se não tiver GPU NVIDIA, comente este bloco — o Whisper
-    # roda em CPU automaticamente como fallback.
-    # ----------------------------------------------------------
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: all   # Usa todas as GPUs disponíveis
-    #           capabilities: [gpu]
+      # ----------------------------------------------------------
+      # MOUNTS EXTRAS (descomente para adicionar pastas do host)
+      # Formato: /caminho/no/host:/caminho/no/container:rw
+      # Exemplo:
+      - /home/alefsander/Documentos:/home/node/Documentos:rw
+      # - /home/alefsander/projetos:/home/node/projetos:ro
+      # ----------------------------------------------------------
+      # - ${OPENCLAW_EXTRA_MOUNTS}
 
-    # ----------------------------------------------------------
-    # Portas — Acesso ao Gateway
-    # ----------------------------------------------------------
+
+      # ----------------------------------------------------------
+      # GPU NVIDIA — Aceleração para Whisper e inferência local
+      # ----------------------------------------------------------
+      # Requer: nvidia-container-toolkit instalado no HOST.
+      # Se não tiver GPU NVIDIA, comente este bloco — o Whisper
+      # roda em CPU automaticamente como fallback.
+      #
+      # Para verificar se a GPU está disponível no container:
+      #   docker compose exec gateway nvidia-smi
+      # ----------------------------------------------------------
+      # deploy:
+      #   resources:
+      #     reservations:
+      #       devices:
+      #         - driver: nvidia
+      #           count: all   # Usa todas as GPUs disponíveis
+      #           capabilities: [gpu]
+
+      # ----------------------------------------------------------
+      # Portas — Acesso ao Gateway
+      # ----------------------------------------------------------
+      # 18789 → Gateway principal (WebSocket + HTTP + Control UI)
+      # 18790 → Bridge para canais de mensagem
+      # ----------------------------------------------------------
     ports:
       - "${OPENCLAW_GATEWAY_PORT:-18789}:18789"
       - "${OPENCLAW_BRIDGE_PORT:-18790}:18790"
 
     # ----------------------------------------------------------
     # Security Hardening
+    # ----------------------------------------------------------
+    # - cap_drop: remove capacidades Linux desnecessárias
+    # - read_only: filesystem read-only (exceto volumes montados)
+    # - tmpfs: diretórios temporários em memória
     # ----------------------------------------------------------
     cap_drop:
       - NET_RAW
@@ -159,9 +179,11 @@ services:
       - KILL
 
     # Filesystem read-only com exceções em memória
+    # Mantém read_only para segurança, mas permite apt install via tmpfs
     read_only: true
     tmpfs:
       - /tmp:noexec,nosuid,size=256m
+      - /home/node/.npm:uid=1000,gid=1000,size=256m
       - /var/lib/apt/lists:noexec,nosuid,size=64m
       - /var/cache/apt:noexec,nosuid,size=128m
 
@@ -169,24 +191,27 @@ services:
     init: true
 
     # Mapeia host.docker.internal para acesso a serviços do host
+    # (ex: Ollama, LM Studio rodando localmente)
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
     # ----------------------------------------------------------
     # Comando — Inicia o Gateway
     # ----------------------------------------------------------
-    entrypoint: ["openclaw"]
-    command:
-      [
-        "gateway",
-        "--bind",
-        "${OPENCLAW_GATEWAY_BIND:-lan}",
-        "--port",
-        "18789",
-      ]
+    # O gateway roda em modo lan para ser acessível do host
+    # via porta publicada. Auth é via token gerado no setup.
+    # ----------------------------------------------------------
+    entrypoint: [ "openclaw" ]
+    command: [ "gateway", "--bind", "${OPENCLAW_GATEWAY_BIND:-lan}", "--port", "18789" ]
 
   # ============================================================
   # CLI — Container interativo para comandos
+  # ============================================================
+  # Usado para rodar comandos sob demanda:
+  #   docker compose run --rm cli onboard
+  #   docker compose run --rm cli health
+  #   docker compose run --rm cli config show
+  #   docker compose run --rm cli channels login
   # ============================================================
   cli:
     image: ${OPENCLAW_IMAGE:-ghcr.io/alefsanderribeiro/alefsander-openclaw:latest}
@@ -195,24 +220,32 @@ services:
       - HOME=/home/node
       - TERM=xterm-256color
       - PATH=/home/node/.openclaw/npm-global/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-      - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN:-}
-      - OPENCODE_API_KEY=${OPENCODE_API_KEY:-}
-      - OPENCODE_GO_API_KEY=${OPENCODE_GO_API_KEY:-}
-      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
-      - BROWSER=echo  # Previne abertura de browser no container
-
-    networks:
-      - default
-      - external
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      - BROWSER=echo # Previne abertura de browser no container
 
     volumes:
-      - ${OPENCLAW_CONFIG_DIR:-$HOME/.openclaw}:/home/node/.openclaw
-      - ${OPENCLAW_WORKSPACE_DIR:-$HOME/.openclaw/workspace}:/home/node/.openclaw/workspace
-      - ${OPENCLAW_DOCS_MOUNT:-/dev/null:/dev/null}
-      - ${OPENCLAW_DOCKER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock:ro
-      - ${OPENCLAW_CONFIG_DIR:-$HOME/.openclaw}/.cache/whisper:/home/node/.cache/whisper
+      - ${OPENCLAW_CONFIG_DIR:-$HOME/.openclaw}:/home/node/.openclaw:rw
+      - ${OPENCLAW_WORKSPACE_DIR:-$HOME/.openclaw/workspace}:/home/node/.openclaw/workspace:rw
+      - ${HOME}/Documentos/Mega/Drive:/home/node/mega-drive:rw
+      - ${HOME}/.config/opencode:/home/node/.config/opencode:rw
+      - ${HOME}/alefsander-openclaw:/home/node/alefsander-openclaw:rw
+      - ${HOME}/:/home/node/:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${OPENCLAW_CONFIG_DIR:-$HOME/.openclaw}/.cache/whisper:/home/node/.cache/whisper:rw
+      - ${OPENCLAW_CONFIG_DIR:-$HOME/.openclaw}/.cache/openclaw-1000:/home/node/.cache/openclaw-1000:rw
+      # ----------------------------------------------------------
+      # MOUNTS EXTRAS (descomente para adicionar pastas do host)
+      # - /home/alefsander/Documentos:/home/node/Documentos:rw
+      # ----------------------------------------------------------
+      # - ${OPENCLAW_EXTRA_MOUNTS}
+
+
+      # Compartilha a rede com o gateway para acessar via localhost
+    network_mode: "service:gateway"
 
     # Terminal interativo
     stdin_open: true
@@ -241,12 +274,4 @@ services:
     init: true
 
     # CLI não tem comando padrão — você roda o que precisa
-    entrypoint: ["openclaw"]
-
-networks:
-  default:
-    name: ${COMPOSE_PROJECT_NAME:-openclaw}-net
-  external:
-    # Rede externa opcional (SearXNG, HA, Vaultwarden, Kuma...)
-    name: ${OPENCLAW_NETWORK:-openclaw-external}
-    external: ${OPENCLAW_NETWORK:+true}
+    entrypoint: [ "openclaw" ]
