@@ -49,7 +49,7 @@ LABEL version="2.0.0"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     # Editores e utilitários de terminal
-    nano vim git curl wget jq htop tmux tree ripgrep sqlite3 \
+    nano vim git curl wget jq htop tmux tree ripgrep sqlite3 sudo \
     # Certificados e GPG (necessário para repositório NVIDIA)
     ca-certificates gnupg2 \
     # Python para skills (Whisper, etc.)
